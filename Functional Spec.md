@@ -250,6 +250,8 @@ The mobile phones are required to communicate directly with each other in order 
 
 The users are also required to communicate directly with each other because they need to meet physically in real life.
 
+![Alt Text](https://gitlab.computing.dcu.ie/harlicf2/2025-csc1049-fharlick-locationapp/-/blob/main/system_architecture_diagram-1.png)
+
 
 ---
 
