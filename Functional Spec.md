@@ -250,7 +250,7 @@ The mobile phones are required to communicate directly with each other in order 
 
 The users are also required to communicate directly with each other because they need to meet physically in real life.
 
-![Alt Text](https://gitlab.computing.dcu.ie/harlicf2/2025-csc1049-fharlick-locationapp/-/blob/main/system_architecture_diagram-1.png)
+![Picture of System Architecture diagram](system_architecture_diagram-1.png)
 
 
 ---
@@ -264,7 +264,8 @@ The user provides details (username, password and temporary location data) which
 The database then saves that information to verify each user
 The database also saves content (posts, messages) and then retrieves it to display on the homepage of the application
 Location data is only used and stored temporarily in the database when there’s a meeting or when a new friend is being added.
-	
+
+![Picture of DFD diagram](DFD_diagram-1.png)
 
 
 ---
@@ -273,5 +274,7 @@ Location data is only used and stored temporarily in the database when there’s
 
 ### 6.1. Gantt Chart
 A Gantt chart detailing the project schedule will be included here, showing key milestones and deadlines.
+
+![Picture of agile gantt chart](agile_gantt_chart-1.png)
 
 ---
