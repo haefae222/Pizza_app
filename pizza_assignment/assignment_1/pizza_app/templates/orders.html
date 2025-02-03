@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+    .orders-table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+    .orders-table th, .orders-table td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #ddd; /* Add a bottom border for each row */
+    }
+</style>
+<h1>Orders Page</h1>
+
+{% if old_pizza %}
+    <table class="orders-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Size</th>
+                <th>Sauce</th>
+                <th>Crust</th>
+                <th>Toppings</th>
+                <th>Delivery Date & Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pizza in old_pizza %}
+                <tr>
+                    <td>{{ pizza.id }}</td>
+                    <td>{{ pizza.pizza_size }}</td>
+                    <td>{{ pizza.pizza_sauce }}</td>
+                    <td>{{ pizza.pizza_crust }}</td>
+                    <td><ul>
+                        {% if pizza.chicken %}
+                            <li>Chicken</li>
+                        {% endif %}
+                        {%if pizza.olives %}
+                            <li>Olives</li>
+                        {% endif %}
+                        {% if pizza.ham %}
+                            <li>Ham</li>
+                        {% endif %}
+                        {%if pizza.pineapple %}
+                            <li>Pineapple</li>
+                        {% endif %}
+                        {% if pizza.peppers %}
+                            <li>Peppers</li>
+                        {% endif %}
+                        {%if pizza.extra_cheese %}
+                            <li>Extra Cheese</li>
+                        {% endif %}
+                        {% if pizza.mushrooms %}
+                            <li>Mushrooms</li>
+                        {% endif %}
+                        {%if pizza.pepperoni %}
+                            <li>Pepperoni</li>
+                        {% endif %}
+                    
+                    </ul></td>
+                    <td>{{ pizza.delivery_datetime }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <h3>You haven't ordered any pizzas</h3>
+{% endif %}
+
+{% endblock %}
+

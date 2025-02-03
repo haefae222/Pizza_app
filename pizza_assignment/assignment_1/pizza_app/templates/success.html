@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<p>Success! here is your order, order number {{pizza.id}}</p>
+<p> Address {{ address }} <hr> Delivery date and time {{ pizza.delivery_datetime }} <hr> </p>
+<p> {{pizza.pizza_size}}</p>
+<p>{{pizza.pizza_crust}}</p>
+<p> {{pizza.pizza_cheese}}
+<p>{{pizza.pizza_sauce}}</p>
+<p> Toppings:</p>
+<ul>
+    {% if pizza.chicken %}
+        <li>Chicken</li>
+    {% endif %}
+    {%if pizza.olives %}
+        <li>Olives</li>
+    {% endif %}
+    {% if pizza.ham %}
+        <li>Ham</li>
+    {% endif %}
+    {%if pizza.pineapple %}
+        <li>Pineapple</li>
+    {% endif %}
+    {% if pizza.peppers %}
+        <li>Peppers</li>
+    {% endif %}
+    {%if pizza.extra_cheese %}
+        <li>Extra Cheese</li>
+    {% endif %}
+    {% if pizza.mushrooms %}
+        <li>Mushrooms</li>
+    {% endif %}
+    {%if pizza.pepperoni %}
+        <li>Pepperoni</li>
+    {% endif %}
+
+</ul>
+<img src="https://images.cooltext.com/5690616.gif" alt="Title" width="500" height="200">
+<img src="https://media1.tenor.com/m/p322zJ_osRkAAAAC/elmo-flames.gif" alt="Title" width="500" height="200">
+{% endblock %}
