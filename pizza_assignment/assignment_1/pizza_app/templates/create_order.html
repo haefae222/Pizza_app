@@ -1,4 +1,11 @@
 {% extends 'base.html' %}
+
+<!--
+page for making a pizza order, the actual content for the form
+is in forms.py.
+Only visible when you are logged in
+-->
+
 {% block content %}
     <form action="" method="POST">
         {% csrf_token %}

@@ -6,6 +6,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 #... any other imports
 
+# this is for our actual classes, such as users and pizzas
+
 class UserManager(BaseUserManager):
     """Define a model manager for User model with no username field."""
 

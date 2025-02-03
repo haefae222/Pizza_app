@@ -13,6 +13,7 @@ from django.urls import reverse
 from django.utils import timezone
 from datetime import timedelta
 
+# these are for knowing which page to return for each link
 
 def Index(request):
     return render(request, 'Index.html')
