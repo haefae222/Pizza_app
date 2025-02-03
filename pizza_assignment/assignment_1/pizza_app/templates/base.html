@@ -1,33 +1,35 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <style>
-        </style>
-    </head>
-    <body>
+<head>
+<!-- instead of a style.css file, which is a pain to set up,
+ I'm just gonna do all the style stuff in the base html file -->
+    <style>
+    </style>
+</head>
+<body>
 <!--this is the navbar, includes links to each page.
 because this is a base.html page, this will be included
 in each page of the app.
 for adding or removing a link, just follow the format.
 probably not going to keep it as a list for the sake
 of easier formatting-->
-        <ul>
-            <li><a href="{% url 'Index' %}">Index</a></li>
-            <li><a href="{% url 'contact' %}">Contact</a></li>
-            <li><a href="{% url 'about' %}">About</a></li>
-            {% if user.is_authenticated %}
-            <li><a href="/logout">Logout</a></li>
-            <li><a href="/create_order">Create Order</a></li>
-            <li><a href="/orders">Orders</a></li>
-            {% else %}
-            <li><a href="/login">Login</a></li>
-            <li><a href="/register">Register</a></li>
-            {% endif %}
-        </ul>
+    <ul>
+        <li><a href="{% url 'Index' %}">Index</a></li>
+        <li><a href="{% url 'contact' %}">Contact</a></li>
+        <li><a href="{% url 'about' %}">About</a></li>
+        {% if user.is_authenticated %}
+        <li><a href="/logout">Logout</a></li>
+        <li><a href="/create_order">Create Order</a></li>
+        <li><a href="/orders">Orders</a></li>
+        {% else %}
+        <li><a href="/login">Login</a></li>
+        <li><a href="/register">Register</a></li>
+        {% endif %}
+    </ul>
 <!--
 this is where the content of each page goes, below the navbar
 -->
           {% block content %}
           {% endblock %}
-    </body>
+</body>
 </html>
