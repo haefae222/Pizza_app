@@ -1,5 +1,10 @@
 {% extends 'base.html' %}
 
+<!--
+page that shows the pizza you just ordered.
+probably not necessary.
+-->
+
 {% block content %}
 
 <p>Success! here is your order, order number {{pizza.id}}</p>
@@ -34,8 +39,5 @@
     {%if pizza.pepperoni %}
         <li>Pepperoni</li>
     {% endif %}
-
 </ul>
-<img src="https://images.cooltext.com/5690616.gif" alt="Title" width="500" height="200">
-<img src="https://media1.tenor.com/m/p322zJ_osRkAAAAC/elmo-flames.gif" alt="Title" width="500" height="200">
 {% endblock %}

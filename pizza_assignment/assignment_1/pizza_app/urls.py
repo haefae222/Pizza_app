@@ -2,6 +2,10 @@ from django.urls import path
 from . import views
 from .forms import *
 
+# these connect the links to each page,
+# dont forget to add each one to view.py
+# and make sure the links in the templates are right too
+
 urlpatterns = [
    path('', views.Index, name="Index"),
    path('create_order/', views.make_pizza, name="create_order"),

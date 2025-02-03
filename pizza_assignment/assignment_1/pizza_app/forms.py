@@ -5,6 +5,10 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.forms import ModelForm, ModelChoiceField
 from django.db import transaction
 
+# these are our forms, for accounts and ordering pizzas etc
+# and things like authentication.
+# pizza form probably isnt needed, user form will probably
+# have to be modified.
 
 class UserSignupForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
