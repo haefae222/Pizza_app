@@ -1,33 +1,81 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <style>
-        </style>
-    </head>
-    <body>
+<head>
+<!-- instead of a style.css file, which is a pain to set up,
+ I'm just gonna do all the style stuff in the base html file -->
+    <style>
+        body {
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(to bottom, #5BC6FC, #3898C8);
+            font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .content {
+            background-color: white;
+            width: auto;
+            filter: drop-shadow(0px 1px 12px rgba(0, 0, 0, 0.25));
+            border-radius: 20px;
+            padding-left: 10px;
+            padding-right: 10px;
+            padding-top: 10px;
+            padding-bottom: 25px;
+            text-align: center;
+            margin-top: 0px;
+        }
+        .navbar {
+            background-color: white;
+            width: 30vw;
+            display: block;
+            filter: drop-shadow(0px 1px 12px rgba(0, 0, 0, 0.25));
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 0px;
+        }
+        .fullcontent {
+            border: solid;
+            width: 80vw;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 10vh;
+        }
+        table {
+            border: solid;
+            width: 100%;
+            height: 20px;
+        }
+    </style>
+</head>
+<body>
 <!--this is the navbar, includes links to each page.
 because this is a base.html page, this will be included
 in each page of the app.
 for adding or removing a link, just follow the format.
 probably not going to keep it as a list for the sake
 of easier formatting-->
-        <ul>
-            <li><a href="{% url 'Index' %}">Index</a></li>
-            <li><a href="{% url 'contact' %}">Contact</a></li>
-            <li><a href="{% url 'about' %}">About</a></li>
-            {% if user.is_authenticated %}
-            <li><a href="/logout">Logout</a></li>
-            <li><a href="/create_order">Create Order</a></li>
-            <li><a href="/orders">Orders</a></li>
-            {% else %}
-            <li><a href="/login">Login</a></li>
-            <li><a href="/register">Register</a></li>
-            {% endif %}
-        </ul>
-<!--
-this is where the content of each page goes, below the navbar
--->
-          {% block content %}
-          {% endblock %}
-    </body>
+    <div class="fullcontent">
+        <div class="navbar">
+            <table>
+                <th><a href="{% url 'Index' %}">Index</a></th>
+                <th><a href="{% url 'contact' %}">Contact</a></th>
+                <th><a href="{% url 'about' %}">About</a></th>
+                {% if user.is_authenticated %}
+                <th><a href="/logout">Logout</a></th>
+                <th><a href="/create_order">Create Order</a></th>
+                <th><a href="/orders">Orders</a></th>
+                {% else %}
+                <th><a href="/login">Login</a></th>
+                <th><a href="/register">Register</a></th>
+                {% endif %}
+            </table>
+        </div>
+    <!--
+    this is where the content of each page goes, below the navbar
+    -->
+        <div class="content">
+        {% block content %}
+        {% endblock %}
+        </div>
+    </div>
+</body>
 </html>
