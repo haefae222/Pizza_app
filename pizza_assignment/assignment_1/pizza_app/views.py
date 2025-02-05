@@ -16,7 +16,7 @@ from datetime import timedelta
 # these are for knowing which page to return for each link
 
 def Index(request):
-    return render(request, 'Index.html')
+    return render(request, 'index.html')
 
 class UserSignupView(CreateView):
     model = User
