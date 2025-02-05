@@ -7,9 +7,3 @@ from .models import *
 
 # Register your models here.
 admin.site.register(User, UserAdmin)
-admin.site.register(pizza_crust)
-admin.site.register(pizza_cheese)
-admin.site.register(pizza_size)
-admin.site.register(pizza_sauce)
-admin.site.register(PizzaOrder)
-admin.site.register(payment)

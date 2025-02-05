@@ -38,9 +38,6 @@ def logout_user(request):
     logout(request)
     return redirect("/")
 
-def create_order(request):
-    return render(request, 'create_order.html')
-
 @login_required
 def make_pizza(request):
     user = request.user
@@ -80,12 +77,6 @@ def success(request, pizzaid):
     pizza = get_object_or_404(PizzaOrder, id=pizzaid)
     address = request.session.get('address')
     return render(request, 'success.html', {'pizza' :pizza, 'address': address})
-
-@login_required
-def orders(request):
-    user = request.user
-    old_pizza = PizzaOrder.objects.filter(user=user)
-    return render(request, 'orders.html', {'old_pizza': old_pizza})
 
 def contact(request):
     return render(request, 'contact.html')
