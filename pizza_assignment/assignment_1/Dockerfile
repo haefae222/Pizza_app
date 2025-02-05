@@ -10,7 +10,7 @@ RUN pip install --no-cache-dir -r requirements.txt && rm requirements.txt
 
 COPY . /app/
 
-RUN python manage.py collectstatic -v 3 --noinput
+#RUN python manage.py collectstatic -v 3 --noinput
 
 #RUN rm -rf /app/mps_site/static
 
