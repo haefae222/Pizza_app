@@ -9,21 +9,22 @@ below is the actual content of the page.
 {% block content %}
 {% load static %}
 <style>
-    img {
-        height: 35%;
+    .landing {
         display: block;
         margin-left: auto;
         margin-right: auto;
-        margin-top: 12.5%;
-        transition: filter 0.5s ease-in-out;
+        text-align: center;
+        max-height: fit-content;
+        margin-top: 150px;
     }
 
-    img:hover {
-        filter: drop-shadow(0px 1px 12px rgba(0, 0, 0, 0.25));
+    img {
+        filter: drop-shadow(0px 1px 10px rgba(0, 0, 0, 0.25));
+        width: 300px;
     }
 
     img:active {
-        filter: brightness(0.9) drop-shadow(0px 1px 10px rgba(0, 0, 0, 0.25));
+        filter: brightness(0.9);
     }
 
     body {
@@ -33,27 +34,36 @@ below is the actual content of the page.
         font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         text-align: center;
         color: white;
-        font-size: x-large ;
         text-shadow: 0px 1px 9px rgba(0, 0, 0, 0.4);
     }
 
     h1 {
         margin-top: 0px;
+        font-size: 60px;
+        margin-bottom: 5px;
+    }
+
+    h2 {
+        font-size: 25px;
+        font-weight: 500;
     }
 
     h3 {
-        font-size: medium;
+        font-size: large;
         text-shadow: 0px 1px 5px rgba(0, 0, 0, 0.4);
     }
         
 </style>
 
+<div class="landing">
 <a href="/contact">
     <img src="{% static 'Logo.PNG' %}" alt="Meetups Logo">
 </a>
 
 <h1>Meetups</h1>
-<br>
+<h2>Building close connections</h2>
+<br><br>
 <h3>Click the logo to get started</h3>
+</div>
 
 {% endblock %}
