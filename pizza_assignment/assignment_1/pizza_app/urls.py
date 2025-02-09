@@ -14,4 +14,5 @@ urlpatterns = [
    path('contact/', views.contact, name="contact"),
    path('about/', views.about, name="about"),
    path('style/', views.style, name="style"),
+   path('qr_code/', views.location, name="qr_code")
 ]

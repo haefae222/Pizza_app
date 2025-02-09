@@ -12,6 +12,12 @@ from django.contrib.sessions.models import Session
 from django.urls import reverse
 from django.utils import timezone
 from datetime import timedelta
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+import base64
+import qrcode
+from io import BytesIO
 
 # these are for knowing which page to return for each link
 
@@ -86,3 +92,6 @@ def about(request):
 
 def style(request):
     return render(request, 'style.css')
+
+def location(request):
+    return render(request, 'qr_code.html')
