@@ -25,7 +25,7 @@ from django.views.decorators.csrf import csrf_protect
 def Index(request):
     return render(request, 'index.html')
 
-@csrf_protect
+#@csrf_protect
 class UserSignupView(CreateView):
     model = User
     form_class = UserSignupForm
@@ -39,7 +39,7 @@ class UserSignupView(CreateView):
         login(self.request, user)
         return redirect('create_meetup')
 
-@csrf_protect
+#@csrf_protect
 class UserLoginView(LoginView):
     template_name='login.html'
 
@@ -104,3 +104,12 @@ def friends_list(request):
 
 def history(request):
     return render(request, 'history.html')
+
+def profile_list(request):
+    profiles = Profile.objects.all()
+    return render(request, "user_list.html", {"profiles": profiles})
+
+def profile(request, username):
+    profile = get_object_or_404(Profile, user__username=username)
+    following_list = profile.follows.all()
+    return render(request, "profile.html", {"profile": profile, "following_list": following_list})

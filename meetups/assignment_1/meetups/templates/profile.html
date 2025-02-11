@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{%  block content %}
+<h1>{{ profile.user.username }}'s Profile</h1>
+<p>Email: {{ profile.user.email }}</p>
+
+<h2>Following:</h2>
+<ul>
+    {% for follow in following_list %}
+        <li>{{ follow.user.username }}</li>
+    {% empty %}
+        <li>No one has meetup with {{ profile.user.email }} yet.</li>
+    {% endfor %}
+</ul>
+
+
+{%  endblock %}
