@@ -129,4 +129,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'meetups.User'
 
 LOGIN_URL = "/login/"
-LOGIN_REDIRECT_URL = "orders"
+LOGIN_REDIRECT_URL = "Index"
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://urri-meetups.rb.dcu.ie',  # Add your domain here
+]

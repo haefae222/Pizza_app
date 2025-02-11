@@ -94,4 +94,10 @@ def style(request):
     return render(request, 'style.css')
 
 def location(request):
-    return render(request, 'qr_code.html')
+    return render(request, 'create_meetup.html')
+
+def friends_list(request):
+    return render(request, 'friends_list.html')
+
+def history(request):
+    return render(request, 'history.html')

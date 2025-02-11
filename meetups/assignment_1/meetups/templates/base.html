@@ -52,9 +52,11 @@ of easier formatting-->
             <th class="indexpage"><a href="{% url 'Index' %}">Index</a></th>
             <th class="contactpage"><a href="{% url 'contact' %}">Contact</a></th>
             <th class="aboutpage"><a href="{% url 'about' %}">About</a></th>
-            <th class="qrcode"><a href="{% url 'qr_code' %}">Create Meetup</a></th>
             {% if user.is_authenticated %}
             <th class="logoutpage"><a href="/logout">Logout</a></th>
+            <th class="history"><a href="{% url 'history' %}">Meetup History</a></th>
+            <th class="friends_list"><a href="{% url 'friends_list' %}">Friend List</a></th>
+            <th class="createmeetup"><a href="{% url 'create_meetup' %}">Create Meetup</a></th>
             {% else %}
             <th class="loginpage"><a href="/login">Login</a></th>
             <th class="registerpage"><a href="/register">Register</a></th>

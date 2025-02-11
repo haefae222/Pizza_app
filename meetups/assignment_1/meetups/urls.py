@@ -14,5 +14,7 @@ urlpatterns = [
    path('contact/', views.contact, name="contact"),
    path('about/', views.about, name="about"),
    path('style/', views.style, name="style"),
-   path('qr_code/', views.location, name="qr_code")
+   path('create_meetup', views.location, name="create_meetup"),
+   path('history/', views.history, name="history"),
+   path('friends_list/', views.friends_list, name="friends_list")
 ]
