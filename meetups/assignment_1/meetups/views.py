@@ -37,7 +37,7 @@ class UserSignupView(CreateView):
     def form_valid(self, form):
         user = form.save()
         login(self.request, user)
-        return redirect('orders')
+        return redirect('create_meetup')
 
 @csrf_protect
 class UserLoginView(LoginView):
