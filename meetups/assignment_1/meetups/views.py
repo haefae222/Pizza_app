@@ -18,12 +18,14 @@ import json
 import base64
 import qrcode
 from io import BytesIO
+from django.views.decorators.csrf import csrf_protect
 
 # these are for knowing which page to return for each link
 
 def Index(request):
     return render(request, 'index.html')
 
+@csrf_protect
 class UserSignupView(CreateView):
     model = User
     form_class = UserSignupForm
@@ -37,6 +39,7 @@ class UserSignupView(CreateView):
         login(self.request, user)
         return redirect('orders')
 
+@csrf_protect
 class UserLoginView(LoginView):
     template_name='login.html'
 
