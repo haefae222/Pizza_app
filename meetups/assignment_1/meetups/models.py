@@ -5,6 +5,8 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db.models.signals import post_save
+from django.utils.timezone import now
+import uuid
 #... any other imports
 
 # this is for our actual classes, such as users and pizzas
@@ -56,6 +58,7 @@ class Profile(models.Model):
         symmetrical=False,
         blank=True
     )
+    qr_code_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     def __str__(self):
         return self.user.username
     
@@ -65,3 +68,20 @@ def create_profile(sender, instance, created, **kwargs):
         user_profile.save()
 
 post_save.connect(create_profile, sender=User)
+
+class Meetup(models.Model):
+    scanner = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="scanned_meetups")
+    scanned = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="scanned_by_meetups")
+    timestamp = models.DateTimeField(default=now)
+    location = models.CharField(max_length=255, blank=True, null=True)  # Optional location
+
+    def save(self, *args, **kwargs):
+        """Ensure users follow each other when a meetup is created."""
+        if self.scanned not in self.scanner.follows.all():
+            self.scanner.follows.add(self.scanned)
+        if self.scanner not in self.scanned.follows.all():
+            self.scanned.follows.add(self.scanner)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Meetup between {self.scanner.user.email} and {self.scanned.user.email} at {self.timestamp}"

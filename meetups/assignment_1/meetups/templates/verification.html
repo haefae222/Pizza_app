@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Meetup Verified!</h1>
+    <p>✅ You have successfully met <b>{{ scanned_user }}</b></p>
+    <p>📍 Location: Latitude: {{ latitude }}, Longitude: {{ longitude }}</p>
+    <p>⏰ Time: {{ time }}</p>
+    <p>📏 Distance: {{ distance }} km</p>
+{% endblock %}

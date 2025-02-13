@@ -11,6 +11,12 @@
     <p id="location"></p>
     <p id="address"></p>
 
+    <!-- QR Code Display -->
+    <h2>Your QR Code:</h2>
+    <a id="qrCodeLink" target="_blank">
+        <img id="qrCodeImg" src="" alt="QR Code" style="display: none; width: 200px; height: 200px;" />
+    </a>
+
     <script>
         document.getElementById("consentCheckbox").addEventListener("change", function() {
             document.getElementById("getLocationBtn").disabled = !this.checked;
@@ -22,20 +28,28 @@
                     (position) => {
                         const latitude = position.coords.latitude;
                         const longitude = position.coords.longitude;
+                        const userID = "{{ request.user.id }}"; // Fix variable name
+
+                        // Generate QR code data
+                        const qrData = `https://127.0.0.1:8000/verification/?user_id=${userID}&lat=${latitude}&lon=${longitude}`;
+                        const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(qrData)}&size=200x200`;
+
+                        // Set QR code image source and make it visible
+                        document.getElementById("qrCodeImg").src = qrCodeUrl;
+                        document.getElementById("qrCodeImg").style.display = "block"; // Show the QR code
+                        document.getElementById("qrCodeLink").href = qrData;
 
                         // Display Latitude & Longitude
                         document.getElementById("status").textContent = "Location received!";
                         document.getElementById("location").textContent = `Latitude: ${latitude}, Longitude: ${longitude}`;
 
-                        // Call Reverse Geocoding API to get the address
-                        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)  // Backend proxy to avoid CORS and rate limits
+                        // Reverse Geocoding API call
+                        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)
                             .then(response => response.json())
                             .then(data => {
-                                if (data.display_name) {
-                                    document.getElementById("address").textContent = `Address: ${data.display_name}`;
-                                } else {
-                                    document.getElementById("address").textContent = "Address not found.";
-                                }
+                                document.getElementById("address").textContent = data.display_name 
+                                    ? `Address: ${data.display_name}` 
+                                    : "Address not found.";
                             })
                             .catch(error => {
                                 console.error("Error fetching address:", error);
@@ -53,5 +67,4 @@
         });
     </script>
 
-    <img src="https://api.qrserver.com/v1/create-qr-code/?data=https://urri-meetups.rb.dcu.ie/&amp;size=100x100" alt="QR Code" title="QR Code" />
 {% endblock %}

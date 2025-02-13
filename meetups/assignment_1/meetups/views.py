@@ -113,3 +113,6 @@ def profile(request, username):
     profile = get_object_or_404(Profile, user__username=username)
     following_list = profile.follows.all()
     return render(request, "profile.html", {"profile": profile, "following_list": following_list})
+
+def verification(request):
+    return render(request, 'verification.html')

@@ -18,5 +18,6 @@ urlpatterns = [
    path('history/', views.history, name="history"),
    path('friends_list/', views.friends_list, name="friends_list"),
    path('user_list/', views.profile_list, name="user_list"),
-   path('profile/<str:username>', views.profile, name="profile")
+   path('profile/<str:username>', views.profile, name="profile"),
+   path('verification/', views.verification, name='verification'),
 ]
