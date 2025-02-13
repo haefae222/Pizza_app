@@ -9,6 +9,7 @@
             margin: 0;
             background: linear-gradient(to bottom, #5BC6FC, #3898C8);
             font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: large;
         }
         .content {
             background-color: white;
@@ -23,8 +24,6 @@
             background-color: white;
             filter: drop-shadow(0px 1px 12px rgba(0, 0, 0, 0.25));
             border-radius: 20px;
-            height: 40px;
-            width: 30%;
         }
         .fullcontent {
             width: 90vw;
@@ -36,7 +35,13 @@
         table {
             width: 100%;
             height: 25px;
+            table-layout: fixed;
             margin-bottom: 5px;
+            border: solid;
+        }
+        th {
+            border: solid;
+            width: auto;
         }
     </style>
 </head>
@@ -49,10 +54,10 @@ probably not going to keep it as a list for the sake
 of easier formatting-->
     <div class="fullcontent">
         <table>
-            <th class="indexpage"><a href="{% url 'Index' %}">Index</a></th>
-            <th class="contactpage"><a href="{% url 'contact' %}">Contact</a></th>
-            <th class="aboutpage"><a href="{% url 'about' %}">About</a></th>
-            <th class="user_list"><a href="{% url 'user_list' %}">Profiles</a></th>
+            <!--<th class="indexpage"><a href="{% url 'Index' %}">Index</a></th>-->
+            <th class="contactpage"><a href="{% url 'contact' %}">Home</a></th>
+            <!--<th class="aboutpage"><a href="{% url 'about' %}">About</a></th>
+            <th class="user_list"><a href="{% url 'user_list' %}">Profiles</a></th>-->
             {% if user.is_authenticated %}
             <th class="logoutpage"><a href="/logout">Logout</a></th>
             <th class="history"><a href="{% url 'history' %}">Meetup History</a></th>
