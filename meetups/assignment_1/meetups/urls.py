@@ -20,4 +20,5 @@ urlpatterns = [
    path('user_list/', views.profile_list, name="user_list"),
    path('profile/<str:username>', views.profile, name="profile"),
    path('verification/', views.verification, name='verification'),
+   path('verify_meetup/', views.verify_meetup, name='verify_meetup')
 ]

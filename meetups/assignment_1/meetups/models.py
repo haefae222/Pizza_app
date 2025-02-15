@@ -7,9 +7,7 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db.models.signals import post_save
 from django.utils.timezone import now
 import uuid
-#... any other imports
 
-# this is for our actual classes, such as users and pizzas
 
 class UserManager(BaseUserManager):
     """Define a model manager for User model with no username field."""

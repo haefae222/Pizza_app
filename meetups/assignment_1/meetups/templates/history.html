@@ -9,6 +9,19 @@
     }
 </style>
 
-<h1>Meetup history</h1>
+<h2>Meetups for {{ request.user.username }}</h2>
+
+<ul>
+    {% for meetup in meetups %}
+        <li>
+            <strong>With:</strong> {{ meetup.scanned.user.username }} / {{ meetup.scanner.user.username }}<br>
+            <strong>Location:</strong> {{ meetup.location }}<br>
+            <strong>Time:</strong> {{ meetup.timestamp }}
+        </li>
+    {% empty %}
+        <p>No meetups yet.</p>
+    {% endfor %}
+</ul>
+
 
 {% endblock %}

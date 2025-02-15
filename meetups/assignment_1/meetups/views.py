@@ -19,6 +19,7 @@ import base64
 import qrcode
 from io import BytesIO
 from django.views.decorators.csrf import csrf_protect
+import math
 
 # these are for knowing which page to return for each link
 
@@ -47,45 +48,6 @@ def logout_user(request):
     logout(request)
     return redirect("/")
 
-@login_required
-def make_pizza(request):
-    user = request.user
-    topping_fields = ['chicken', 'pepperoni', 'mushrooms', 'olives', 'ham', 'pineapple', 'onion', 'peppers']
-    if request.method == 'POST':
-        form = PizzaOrderForm(request.POST)
-        if form.is_valid():
-            PizzaOrder.objects.filter(user=user)
-
-            pizza = form.save(commit=False)
-            pizza.user = user
-            pizza.delivery_datetime = timezone.now()
-            pizza.save()
-            request.session['pizzaid'] = pizza.id
-            return redirect('payment_info')  # Redirect to success page
-    else:
-        form = PizzaOrderForm()
-        return render(request, 'create_order.html', {'form': form})
-
-@login_required
-def payment_info(request):
-    user = request.user
-    if request.method == 'POST':
-        form = PaymentForm(request.POST)
-        if form.is_valid():
-            pizzaid = request.session.get('pizzaid')
-            payment = form.save(commit=False)
-            payment.save()
-            address = payment.address
-            request.session['address'] = address
-            return redirect('success', pizzaid=pizzaid)
-    else:
-        form = PaymentForm()
-    return render(request, 'payment_info.html', {'form': form})
-
-def success(request, pizzaid):
-    pizza = get_object_or_404(PizzaOrder, id=pizzaid)
-    address = request.session.get('address')
-    return render(request, 'success.html', {'pizza' :pizza, 'address': address})
 
 def contact(request):
     return render(request, 'contact.html')
@@ -100,10 +62,14 @@ def location(request):
     return render(request, 'create_meetup.html')
 
 def friends_list(request):
-    return render(request, 'friends_list.html')
+    profile = request.user.profile
+    following = profile.follows.all()
+    return render(request, 'friends_list.html', {'following': following})
 
 def history(request):
-    return render(request, 'history.html')
+    profile = request.user.profile  # Get the logged-in user's profile
+    meetups = profile.scanned_meetups.all() | profile.scanned_by_meetups.all()
+    return render(request, "history.html", {"meetups": meetups})
 
 def profile_list(request):
     profiles = Profile.objects.all()
@@ -115,4 +81,77 @@ def profile(request, username):
     return render(request, "profile.html", {"profile": profile, "following_list": following_list})
 
 def verification(request):
-    return render(request, 'verification.html')
+    return render(request, "verification.html")
+
+#calculates the distsance between latitude and longitude between two poitns
+def calculate_distance(lat1, lon1, lat2, lon2):
+    R = 6371000  # Radius of the Earth in meters
+    phi1, phi2 = math.radians(lat1), math.radians(lat2)
+    delta_phi = math.radians(lat2 - lat1)
+    delta_lambda = math.radians(lon2 - lon1)
+
+    a = math.sin(delta_phi / 2) ** 2 + math.cos(phi1) * math.cos(phi2) * math.sin(delta_lambda / 2) ** 2
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+
+    return R * c  # Distance in meters
+
+@login_required
+def verify_meetup(request):
+    scanner = request.user.profile  # The user scanning the QR code
+
+    # Extract query parameters from the request
+    qr_user_id = request.GET.get('user_id')
+    qr_lat = request.GET.get('lat')
+    qr_lon = request.GET.get('lon')
+    scanner_lat = request.GET.get('scanner_lat')
+    scanner_lon = request.GET.get('scanner_lon')
+
+    # Validate required parameters
+    if not all([qr_user_id, qr_lat, qr_lon, scanner_lat, scanner_lon]):
+        return JsonResponse({'error': 'Missing required location data'}, status=400)
+
+    try:
+        # Convert coordinates to float
+        qr_lat, qr_lon = float(qr_lat), float(qr_lon)
+        scanner_lat, scanner_lon = float(scanner_lat), float(scanner_lon)
+    except ValueError:
+        return JsonResponse({'error': 'Invalid latitude or longitude values'}, status=400)
+
+    # Fetch the QR code owner
+    try:
+        qr_owner = Profile.objects.get(user__id=qr_user_id)
+    except Profile.DoesNotExist:
+        return JsonResponse({'error': 'QR code owner not found'}, status=404)
+
+    # Calculate distance between scanner and QR code location
+    distance = calculate_distance(qr_lat, qr_lon, scanner_lat, scanner_lon)
+
+    if distance > 100:  # If users are not within 10 meters
+        return JsonResponse({
+            'error': 'Users must be within 10 meters to verify meetup',
+            'distance': round(distance, 2)  # Return distance even on failure
+        }, status=400)
+
+    # Users follow each other
+    scanner.follows.add(qr_owner)
+    qr_owner.follows.add(scanner)
+
+    # Log the meetup
+    meetup = Meetup.objects.create(
+        scanner=scanner,
+        scanned=qr_owner,
+        location=f"{scanner_lat}, {scanner_lon}",
+        timestamp=now()
+    )
+
+    # Return JSON response with verification details
+    return JsonResponse({
+        'success': True,
+        'message': 'Meetup verified!',
+        'meetup_id': meetup.id,
+        'distance': round(distance, 2),  # Verified distance
+        'scanner_username': scanner.user.username,  # Scanner (who verified)
+        'qr_owner_username': qr_owner.user.username,  # QR Code Owner
+        'location': f"{scanner_lat}, {scanner_lon}",  # Meetup Location
+        'timestamp': meetup.timestamp.strftime("%Y-%m-%d %H:%M:%S")  # Date and Time
+    })

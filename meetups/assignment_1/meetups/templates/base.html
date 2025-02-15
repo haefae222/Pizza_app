@@ -3,6 +3,7 @@
 <head>
 <!-- instead of a style.css file, which is a pain to set up,
  I'm just gonna do all the style stuff in the base html file -->
+
     <style>
         body {
             min-height: 100vh;
@@ -59,6 +60,7 @@ of easier formatting-->
             <!--<th class="aboutpage"><a href="{% url 'about' %}">About</a></th>
             <th class="user_list"><a href="{% url 'user_list' %}">Profiles</a></th>-->
             {% if user.is_authenticated %}
+            <th class="username">Logged in as: <strong>{{ user.username }}</strong></th>
             <th class="logoutpage"><a href="/logout">Logout</a></th>
             <th class="history"><a href="{% url 'history' %}">Meetup History</a></th>
             <th class="friends_list"><a href="{% url 'friends_list' %}">Friend List</a></th>

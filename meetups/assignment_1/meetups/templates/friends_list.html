@@ -10,5 +10,11 @@
 </style>
 
 <h1>Friend list</h1>
+<ul>
+    {% for followed_profile in following %}
+        <li>{{ followed_profile.user.email }}</li>
+    {% endfor %}
+</ul>
+
 
 {% endblock %}
