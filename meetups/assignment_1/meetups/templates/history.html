@@ -7,21 +7,45 @@
         border-radius: 20px;
         height: 40px;
     }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    th {
+        background-color: #5BC6FC;
+    }
 </style>
 
 <h2>Meetups for {{ request.user.username }}</h2>
 
-<ul>
-    {% for meetup in meetups %}
-        <li>
-            <strong>With:</strong> {{ meetup.scanned.user.username }} / {{ meetup.scanner.user.username }}<br>
-            <strong>Location:</strong> {{ meetup.location }}<br>
-            <strong>Time:</strong> {{ meetup.timestamp }}
-        </li>
-    {% empty %}
-        <p>No meetups yet.</p>
-    {% endfor %}
-</ul>
-
+{% if meetups %}
+    <table>
+        <thead>
+            <tr>
+                <th>With</th>
+                <th>Location</th>
+                <th>Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for meetup in meetups %}
+            <tr>
+                <td>
+                    {% if meetup.scanner.user == request.user %}
+                        {{ meetup.scanned.user.username }}
+                    {% else %}
+                        {{ meetup.scanner.user.username }}
+                    {% endif %}
+                </td>
+                <td>{{ meetup.location|default:"N/A" }}</td>
+                <td>{{ meetup.timestamp }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No meetups yet.</p>
+{% endif %}
 
 {% endblock %}

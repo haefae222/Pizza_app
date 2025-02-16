@@ -1,16 +1,171 @@
 {% extends 'base.html' %}
 
-{%  block content %}
-<h1>{{ profile.user.username }}'s Profile</h1>
-<p>Email: {{ profile.user.email }}</p>
+{% block content %}
+    <div class="profile-container">
+        <!-- User Info -->
+        <h1>{{ profile.user.username }}'s Profile</h1>
+        <p>Email: {{ profile.user.email }}</p>
 
-<h2>Following:</h2>
-<ul>
-    {% for follow in following_list %}
-        <li>{{ follow.user.username }}</li>
-    {% empty %}
-        <li>No one has meetup with {{ profile.user.email }} yet.</li>
-    {% endfor %}
-</ul>
+        <!-- Profile Layout (Left: Following List, Right: To-Do List) -->
+        <div class="profile-content">
+            <!-- Left Section: Following List -->
+            <div class="left-section">
+                <h2>Following:</h2>
+                <ul class="following-list">
+                    {% for follow in following_list %}
+                        <li>{{ follow.user.username }}</li>
+                    {% empty %}
+                        <li>You're not following anyone yet.</li>
+                    {% endfor %}
+                </ul>
+            </div>
 
-{%  endblock %}
+            <!-- Right Section: To-Do List -->
+            <div class="right-section">
+                <h2>People to Meet</h2>
+                <ul id="todo-list">
+                    {% for meetup in meetups %}
+                        <li id="meetup-{{ meetup.id }}">
+                            {{ meetup.person_to_meet }} at {{ meetup.meet_time }}
+                            <button class="delete-meetup" data-id="{{ meetup.id }}">Delete</button>
+                        </li>
+                    {% empty %}
+                        <li>No scheduled meetups yet.</li>
+                    {% endfor %}
+                </ul>
+
+                <!-- Form to Add New People to Meet -->
+                <h3>Add to To-Do List</h3>
+                <form method="POST" class="todo-form">
+                    {% csrf_token %}
+                    <input type="text" name="person_to_meet" placeholder="Person's Name" required>
+                    <input type="datetime-local" name="meet_time" required>
+                    <button type="submit">Add</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add the JavaScript to handle the delete button -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const deleteButtons = document.querySelectorAll('.delete-meetup');
+
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const meetupId = button.getAttribute('data-id');
+                    const listItem = document.getElementById(`meetup-${meetupId}`);
+                    
+                    // Send an AJAX POST request to the backend to delete the meetup
+                    fetch(`/delete_meetup/${meetupId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                        },
+                        body: JSON.stringify({
+                            'meetup_id': meetupId
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // If the meetup was successfully deleted, remove it from the DOM
+                            listItem.remove();
+                        } else {
+                            alert('Error deleting meetup');
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+
+    <style>
+        .profile-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Profile content layout */
+        .profile-content {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        /* Left Section (Following List) */
+        .left-section {
+            flex: 1;
+            max-height: 500px;  /* Adjust based on your requirements */
+            overflow-y: auto;  /* Makes it scrollable */
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .following-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .following-list li {
+            margin: 10px 0;
+        }
+
+        /* Right Section (To-Do List) */
+        .right-section {
+            flex: 2;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        /* Styling the To-Do Form */
+        .todo-form input[type="text"],
+        .todo-form input[type="datetime-local"] {
+            margin: 10px 0;
+            padding: 5px;
+            width: 80%;
+            max-width: 300px;
+        }
+
+        .todo-form button {
+            padding: 5px 10px;
+            background-color: #3898C8;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .todo-form button:hover {
+            background-color: #2d7a99;
+        }
+
+        /* Styling the To-Do List */
+        #todo-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #todo-list li {
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .delete-meetup {
+            background-color: red;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 3px 8px;
+        }
+
+        .delete-meetup:hover {
+            background-color: darkred;
+        }
+    </style>
+{% endblock %}

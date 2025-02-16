@@ -25,3 +25,8 @@ class UserSignupForm(UserCreationForm):
 class UserLoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super(UserLoginForm, self).__init__(*args, **kwargs)
+
+class MeetupToDoForm(forms.ModelForm):
+    class Meta:
+        model = MeetupToDo
+        fields = ['person_to_meet', 'meet_time']

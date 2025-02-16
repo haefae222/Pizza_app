@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-<!-- instead of a style.css file, which is a pain to set up,
- I'm just gonna do all the style stuff in the base html file -->
-
     <style>
         body {
             min-height: 100vh;
@@ -44,39 +41,60 @@
             border: solid;
             width: auto;
         }
+
+        /* Header Styling */
+        .header {
+            display: flex;
+            align-items: center;
+            padding: 5px 5px;
+            border-radius: 5px;
+            filter: drop-shadow(0px 1px 12px rgba(0, 0, 0, 0.25));
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
     </style>
 </head>
 <body>
-<!--this is the navbar, includes links to each page.
-because this is a base.html page, this will be included
-in each page of the app.
-for adding or removing a link, just follow the format.
-probably not going to keep it as a list for the sake
-of easier formatting-->
-    <div class="fullcontent">
-        <table>
-            <!--<th class="indexpage"><a href="{% url 'Index' %}">Index</a></th>-->
+
+    <!-- Header with Username & Profile Picture -->
+    <div class="header">
+        {% if user.is_authenticated %}
+            <div class="user-info">
+                <strong>{{ user.username }}</strong>
+            </div>
+        {% else %}
+            <strong>Welcome, Guest!</strong>
+        {% endif %}
+    </div>
+
+    <!-- Navigation Bar -->
+   <!-- Navigation Bar -->
+<div class="fullcontent">
+    <table>
+        {% if user.is_authenticated and user.username %}
+            <th class="profilepage"><a href="{% url 'profile' user.username %}">Profile</a></th>
+        {% else %}
             <th class="contactpage"><a href="{% url 'contact' %}">Home</a></th>
-            <!--<th class="aboutpage"><a href="{% url 'about' %}">About</a></th>
-            <th class="user_list"><a href="{% url 'user_list' %}">Profiles</a></th>-->
-            {% if user.is_authenticated %}
-            <th class="username">Logged in as: <strong>{{ user.username }}</strong></th>
-            <th class="logoutpage"><a href="/logout">Logout</a></th>
+        {% endif %}
+        
+        {% if user.is_authenticated %}
             <th class="history"><a href="{% url 'history' %}">Meetup History</a></th>
             <th class="friends_list"><a href="{% url 'friends_list' %}">Friend List</a></th>
             <th class="createmeetup"><a href="{% url 'create_meetup' %}">Create Meetup</a></th>
-            {% else %}
+            <th class="logoutpage"><a href="/logout">Logout</a></th>
+        {% else %}
             <th class="loginpage"><a href="/login">Login</a></th>
             <th class="registerpage"><a href="/register">Register</a></th>
-            {% endif %}
-        </table>
-    <!--
-    this is where the content of each page goes, below the navbar
-    -->
-        <div class="content">
+        {% endif %}
+    </table>
+
+    <div class="content">
         {% block content %}
         {% endblock %}
-        </div>
     </div>
+</div>
 </body>
 </html>

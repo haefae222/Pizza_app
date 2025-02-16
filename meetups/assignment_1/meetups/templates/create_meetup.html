@@ -2,13 +2,32 @@
 
 {% block content %}
 <style>
-    .createmeetup {
-        background-color: white;
-        filter: drop-shadow(0px 1px 12px rgba(0, 0, 0, 0.25));
-        border-radius: 20px;
-        height: 40px;
+    .container {
+        display: flex;
+        align-items: center; /* Aligns content vertically */
+        justify-content: space-between; /* Places text on left, QR on right */
+        max-width: 800px; /* Adjust width as needed */
+        margin: auto; /* Centers the container */
+        padding: 20px;
+    }
+    .text-section {
+        flex: 1; /* Takes available space on the left */
+        text-align: left;
+    }
+    .qr-section {
+        flex: 1; /* Takes available space on the right */
+        display: flex;
+        justify-content: center;
+    }
+    #qrCodeImg {
+        width: 300px; /* Adjust QR code size */
+        height: 300px;
+        display: none;
     }
 </style>
+
+<div class="container">
+    <div class="text-section">
 
     <h1>Get Your Location</h1>
     
@@ -20,12 +39,16 @@
     <p id="status">Click the button to get your location.</p>
     <p id="location"></p>
     <p id="address"></p>
+    </div>
 
     <!-- QR Code Display -->
-    <h2>Your QR Code:</h2>
+     <div class="qr-section">
+    <h2 style="text-align: center;">Your QR Code:</h2>
     <a id="qrCodeLink" target="_blank">
-        <img id="qrCodeImg" src="" alt="QR Code" style="display: none; width: 200px; height: 200px;" />
+        <img id="qrCodeImg" src="" alt="QR Code" />
     </a>
+    </div>
+</div>
 
     <script>
         document.getElementById("consentCheckbox").addEventListener("change", function() {
@@ -41,7 +64,7 @@
                         const userID = "{{ request.user.id }}"; // Fix variable name
 
                         // Generate QR code data
-                        const qrData = `https://127.0.0.1:8000/verification/?user_id=${userID}&lat=${latitude}&lon=${longitude}`;
+                        const qrData = `https://urri-meetups.rb.dcu.ie/verification/?user_id=${userID}&lat=${latitude}&lon=${longitude}`;
                         const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(qrData)}&size=200x200`;
 
                         // Set QR code image source and make it visible

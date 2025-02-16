@@ -9,3 +9,4 @@ from .models import *
 admin.site.register(User, UserAdmin)
 admin.site.register(Profile)
 admin.site.register(Meetup)
+admin.site.register(MeetupToDo)

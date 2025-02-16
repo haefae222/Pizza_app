@@ -83,3 +83,11 @@ class Meetup(models.Model):
 
     def __str__(self):
         return f"Meetup between {self.scanner.user.email} and {self.scanned.user.email} at {self.timestamp}"
+
+class MeetupToDo(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="todo_meetups")
+    person_to_meet = models.CharField(max_length=255)
+    meet_time = models.DateTimeField()
+
+    def __str__(self):
+        return f"{self.user.email} plans to meet {self.person_to_meet} on {self.meet_time}"

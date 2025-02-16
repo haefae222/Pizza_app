@@ -18,7 +18,8 @@ urlpatterns = [
    path('history/', views.history, name="history"),
    path('friends_list/', views.friends_list, name="friends_list"),
    path('user_list/', views.profile_list, name="user_list"),
-   path('profile/<str:username>', views.profile, name="profile"),
+   path('profile/<str:username>', views.user_profile_page, name="profile"),
    path('verification/', views.verification, name='verification'),
-   path('verify_meetup/', views.verify_meetup, name='verify_meetup')
+   path('verify_meetup/', views.verify_meetup, name='verify_meetup'),
+   path('delete_meetup/<int:meetup_id>/', views.delete_meetup, name='delete_meetup')
 ]

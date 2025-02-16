@@ -75,11 +75,6 @@ def profile_list(request):
     profiles = Profile.objects.all()
     return render(request, "user_list.html", {"profiles": profiles})
 
-def profile(request, username):
-    profile = get_object_or_404(Profile, user__username=username)
-    following_list = profile.follows.all()
-    return render(request, "profile.html", {"profile": profile, "following_list": following_list})
-
 def verification(request):
     return render(request, "verification.html")
 
@@ -155,3 +150,41 @@ def verify_meetup(request):
         'location': f"{scanner_lat}, {scanner_lon}",  # Meetup Location
         'timestamp': meetup.timestamp.strftime("%Y-%m-%d %H:%M:%S")  # Date and Time
     })
+
+@login_required
+def user_profile_page(request, username=None):
+    if username:  # Fetch the profile by username if provided
+        profile = get_object_or_404(Profile, user__username=username)
+    else:  # Default to the logged-in user's profile if no username is given
+        profile = request.user.profile
+
+    meetups = MeetupToDo.objects.filter(user=request.user)
+    following_list = profile.follows.all()
+
+    if 'person_to_meet' in request.POST and 'meet_time' in request.POST:
+            person_to_meet = request.POST['person_to_meet']
+            meet_time = request.POST['meet_time']
+            MeetupToDo.objects.create(user=request.user, person_to_meet=person_to_meet, meet_time=meet_time)
+            return redirect('profile', username=profile.user.username)  # Redirect after adding to-do item
+
+    return render(request, 'profile.html', {
+        'profile': profile,
+        'meetups': meetups,
+        'following_list': following_list
+    })
+
+@login_required
+def delete_meetup(request, meetup_id):
+    # Check if the request is a POST (we're doing it via AJAX, so it should be POST)
+    if request.method == 'POST':
+        # Get the meetup object or return a 404 if it doesn't exist
+        meetup = get_object_or_404(MeetupToDo, id=meetup_id, user=request.user)
+        
+        # Delete the meetup
+        meetup.delete()
+        
+        # Return a JSON response indicating success
+        return JsonResponse({'success': True})
+
+    # If the method is not POST, we can return an error response
+    return JsonResponse({'success': False}, status=400)
