@@ -2,105 +2,56 @@
 <html>
 <head>
     <style>
-        /* Global Styles */
         body {
             min-height: 100vh;
             margin: 0;
             background: linear-gradient(to bottom, #5BC6FC, #3898C8);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             font-size: large;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 0 20px;
         }
-
-        /* Container for Content */
-        .fullcontent {
-            width: 100%;
-            max-width: 1200px;
-            padding: 30px;
+        .content {
             background-color: white;
-            border-radius: 15px;
-            box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.15);
-            margin-top: 50px;
+            width: auto;
+            height: 80vh;
+            filter: drop-shadow(0px 1px 12px rgba(0, 0, 0, 0.25));
+            border-radius: 20px;
+            text-align: center;
+            padding-top: 10px;
         }
-
-        /* Header */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 2px solid #ccc;
-            margin-bottom: 20px;
+        .currentpage {
+            background-color: white;
+            filter: drop-shadow(0px 1px 12px rgba(0, 0, 0, 0.25));
+            border-radius: 20px;
         }
-
-        .user-info {
-            font-size: 1.2em;
-            font-weight: bold;
+        .fullcontent {
+            width: 90vw;
+            padding-top: 50px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
         }
-
-        /* Navbar Styles */
         table {
             width: 100%;
-            margin: 20px 0;
-            text-align: center;
-            border-spacing: 0;
+            height: 25px;
+            table-layout: fixed;
+            margin-bottom: 5px;
+        }
+        th {
+            width: auto;
         }
 
-        table th {
-            background-color: #3898C8;
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s;
+        /* Header Styling */
+        .header {
+            display: flex;
+            align-items: center;
+            padding: 5px 5px;
+            border-radius: 5px;
+            filter: drop-shadow(0px 1px 12px rgba(0, 0, 0, 0.25));
         }
-
-        table th:hover {
-            background-color: #2c74b5;
-        }
-
-        table th a {
-            color: white;
-            text-decoration: none;
-            font-size: 1.1em;
-        }
-
-        /* Content Section */
-        .content {
-            background-color: #f9f9f9;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .content h2 {
-            margin-top: 0;
-            color: #333;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            table {
-                width: 100%;
-                display: block;
-                overflow-x: auto;
-            }
-
-            table th {
-                padding: 12px;
-            }
-
-            .content {
-                padding: 15px;
-            }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
     </style>
 </head>
@@ -113,37 +64,35 @@
                 <strong>{{ user.username }}</strong>
             </div>
         {% else %}
-            <div class="user-info">
-                <strong>Welcome, Guest!</strong>
-            </div>
+            <strong>Welcome, Guest!</strong>
         {% endif %}
     </div>
 
     <!-- Navigation Bar -->
-    <div class="fullcontent">
-        <table>
-            {% if user.is_authenticated and user.username %}
-                <th><a href="{% url 'profile' user.username %}">Profile</a></th>
-            {% else %}
-                <th><a href="{% url 'contact' %}">Home</a></th>
-            {% endif %}
-            
-            {% if user.is_authenticated %}
-                <th><a href="{% url 'history' %}">Meetup History</a></th>
-                <th><a href="{% url 'friends_list' %}">Friend List</a></th>
-                <th><a href="{% url 'create_meetup' %}">Create Meetup</a></th>
-                <th><a href="/logout">Logout</a></th>
-                <th><a href="{% url 'dashboard' %}">Dashboard</a></th>
-            {% else %}
-                <th><a href="/login">Login</a></th>
-                <th><a href="/register">Register</a></th>
-            {% endif %}
-        </table>
+   <!-- Navigation Bar -->
+<div class="fullcontent">
+    <table>
+        {% if user.is_authenticated and user.username %}
+            <th class="profilepage"><a href="{% url 'profile' user.username %}">Profile</a></th>
+        {% else %}
+            <th class="contactpage"><a href="{% url 'contact' %}">Home</a></th>
+        {% endif %}
+        
+        {% if user.is_authenticated %}
+            <th class="history"><a href="{% url 'history' %}">Meetup History</a></th>
+            <th class="friends_list"><a href="{% url 'friends_list' %}">Friend List</a></th>
+            <th class="createmeetup"><a href="{% url 'create_meetup' %}">Create Meetup</a></th>
+            <th class="logoutpage"><a href="/logout">Logout</a></th>
+        {% else %}
+            <th class="loginpage"><a href="/login">Login</a></th>
+            <th class="registerpage"><a href="/register">Register</a></th>
+        {% endif %}
+    </table>
 
-        <div class="content">
-            {% block content %}
-            {% endblock %}
-        </div>
+    <div class="content">
+        {% block content %}
+        {% endblock %}
     </div>
+</div>
 </body>
 </html>
