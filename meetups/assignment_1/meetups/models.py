@@ -7,6 +7,7 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db.models.signals import post_save
 from django.utils.timezone import now
 import uuid
+from django.contrib.auth import get_user_model
 
 
 class UserManager(BaseUserManager):
@@ -91,3 +92,30 @@ class MeetupToDo(models.Model):
 
     def __str__(self):
         return f"{self.user.email} plans to meet {self.person_to_meet} on {self.meet_time}"
+
+# Post Model (with Likes)
+class Post(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="posts")
+    text = models.TextField()
+    image = models.ImageField(upload_to="post_images/", blank=True, null=True)
+    created_at = models.DateTimeField(default=now)
+    likes = models.ManyToManyField(User, related_name="liked_posts", blank=True)  # Many-to-Many for likes
+
+    def like_count(self):
+        return self.likes.count()
+
+    def comment_count(self):
+        return self.comments.count()  # Count comments on post
+
+    def __str__(self):
+        return f"Post by {self.user.email} at {self.created_at}"
+
+# Comment Model (Connected to Posts)
+class Comment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Comment by {self.user.email} on {self.post.id}"

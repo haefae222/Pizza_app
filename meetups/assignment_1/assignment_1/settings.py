@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'meetups',
 ]
 
@@ -134,3 +135,6 @@ LOGIN_REDIRECT_URL = "create_meetup"
 CSRF_TRUSTED_ORIGINS = [
     'https://urri-meetups.rb.dcu.ie',  # Add your domain here
 ]
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")

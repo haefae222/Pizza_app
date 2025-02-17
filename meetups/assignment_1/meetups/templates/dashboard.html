@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Welcome, {{ request.user.username }}!</h2>
+
+<!-- Post Form -->
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Post</button>
+</form>
+
+<hr>
+
+<!-- Display Posts -->
+<div id="post-container">
+    {% for post in posts %}
+        <div class="post" data-post-id="{{ post.id }}">
+            <p><strong>{{ post.user.username }}</strong> - {{ post.created_at|date:"F j, Y, g:i a" }}</p>
+            <p>{{ post.text }}</p>
+            {% if post.image %}
+                <img src="{{ post.image.url }}" style="max-width: 300px;">
+            {% endif %}
+            <!-- Like Button -->
+            <button class="like-btn" data-id="{{ post.id }}">❤️ Like</button> 
+            <span class="like-count">{{ post.like_count }}</span>
+
+            <!-- Comment Section -->
+            <div class="comment-section">
+                <input type="text" class="comment-input" placeholder="Write a comment..." data-id="{{ post.id }}">
+                <button class="comment-btn" data-id="{{ post.id }}">💬 Comment</button>
+                <div class="comments">
+                    {% for comment in post.comments.all %}
+                        <div class="comment">
+                            <strong>{{ comment.user.username }}</strong>: {{ comment.text }} <br>
+                            <small>{{ comment.created_at|date:"F j, Y, g:i a" }}</small>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <p>No posts yet. Follow some friends and start posting!</p>
+    {% endfor %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle Like Button Click
+    document.querySelectorAll('.like-btn').forEach(function(button) {
+        button.addEventListener('click', function() {
+            var postId = button.getAttribute('data-id');
+            fetch("{% url 'update_post' %}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `post_id=${postId}&action=like`
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Update the like count and button text
+                button.nextElementSibling.textContent = data.like_count;
+                button.textContent = data.liked ? "❤️ Liked" : "❤️ Like";
+            });
+        });
+    });
+
+    // Handle Comment Button Click
+    document.querySelectorAll('.comment-btn').forEach(function(button) {
+        button.addEventListener('click', function() {
+            var postId = button.getAttribute('data-id');
+            var commentInput = button.previousElementSibling;
+            var commentText = commentInput.value;
+
+            if (commentText) {
+                fetch("{% url 'update_post' %}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `post_id=${postId}&action=comment&comment_text=${commentText}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Update the comment count
+                    var commentSection = button.closest('.post').querySelector('.comments');
+                    commentSection.innerHTML += `<div class="comment"><strong>${data.comment_user}</strong>: ${data.comment_text} <br><small>${data.created_at}</small></div>`;
+                    button.previousElementSibling.value = '';  // Clear the comment input
+                    button.closest('.post').querySelector('.like-count').textContent = data.comment_count;  // Update comment count
+                });
+            }
+        });
+    });
+});
+</script>
+
+{% endblock %}

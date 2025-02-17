@@ -20,6 +20,7 @@ import qrcode
 from io import BytesIO
 from django.views.decorators.csrf import csrf_protect
 import math
+from django.core.paginator import Paginator
 
 # these are for knowing which page to return for each link
 
@@ -188,3 +189,77 @@ def delete_meetup(request, meetup_id):
 
     # If the method is not POST, we can return an error response
     return JsonResponse({'success': False}, status=400)
+
+@login_required
+def dashboard(request):
+    profile = request.user.profile
+    following = profile.follows.all()
+
+    # Ensure user's own posts are included
+    posts = Post.objects.filter(user__profile__in=following) | Post.objects.filter(user=request.user)
+    posts = posts.order_by("-created_at")  # Latest first
+
+    form = PostForm(request.POST or None, request.FILES or None)
+    if request.method == "POST" and form.is_valid():
+        post = form.save(commit=False)
+        post.user = request.user
+        post.save()
+        return redirect("dashboard")
+
+    return render(request, "dashboard.html", {"posts": posts, "form": form})
+
+def post_list(request):
+    posts = Post.objects.all().order_by('-created_at')  # Order by latest posts
+    paginator = Paginator(posts, 5)  # Load 5 posts per page
+
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        posts_json = [
+            {
+                "user": post.user.username,
+                "text": post.text,
+                "created_at": post.created_at.strftime("%B %d, %Y, %I:%M %p"),
+                "image": post.image.url if post.image else None,
+                "id": post.id,
+            }
+            for post in page_obj
+        ]
+        return JsonResponse({"posts": posts_json})
+
+    return render(request, "posts.html", {"posts": page_obj})
+
+def update_post(request):
+    if request.method == 'POST':
+        post_id = request.POST.get('post_id')
+        action = request.POST.get('action')  # action could be 'like' or 'comment'
+        post = get_object_or_404(Post, id=post_id)
+
+        if action == 'like':
+            # Toggle the like/unlike action
+            if request.user in post.likes.all():
+                post.likes.remove(request.user)
+            else:
+                post.likes.add(request.user)
+            response = {
+                'like_count': post.like_count(),
+                'liked': request.user in post.likes.all()
+            }
+
+        elif action == 'comment':
+            comment_text = request.POST.get('comment_text')
+            # Create a new comment
+            comment = Comment.objects.create(
+                user=request.user,
+                post=post,
+                text=comment_text
+            )
+            response = {
+                'comment_count': post.comment_count(),
+                'comment_text': comment.text,
+                'comment_user': comment.user.username,
+                'created_at': comment.created_at.strftime("%b %d, %Y %H:%M")
+            }
+
+        return JsonResponse(response)

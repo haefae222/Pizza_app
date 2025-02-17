@@ -30,3 +30,11 @@ class MeetupToDoForm(forms.ModelForm):
     class Meta:
         model = MeetupToDo
         fields = ['person_to_meet', 'meet_time']
+
+from django import forms
+from .models import Post
+
+class PostForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = ["text", "image"]

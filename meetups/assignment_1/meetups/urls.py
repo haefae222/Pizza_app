@@ -21,5 +21,7 @@ urlpatterns = [
    path('profile/<str:username>', views.user_profile_page, name="profile"),
    path('verification/', views.verification, name='verification'),
    path('verify_meetup/', views.verify_meetup, name='verify_meetup'),
-   path('delete_meetup/<int:meetup_id>/', views.delete_meetup, name='delete_meetup')
+   path('delete_meetup/<int:meetup_id>/', views.delete_meetup, name='delete_meetup'),
+   path("dashboard/", views.dashboard, name="dashboard"),
+   path("update_post/", views.update_post, name="update_post")
 ]
