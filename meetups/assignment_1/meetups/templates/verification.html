@@ -163,8 +163,7 @@
                         });
 
                     // Construct the URL to verify meetup with the scanner's location
-                    const verifyUrl = `/verify_meetup/?user_id=${userID}&lat=${qrLat}&lon=${qrLon}&scanner_lat=${scannerLat}&scanner_lon=${scannerLon}`;
-
+                    const verifyUrl = `https://urri-meetups.rb.dcu.ie/verify_meetup/?user_id=${userID}&lat=${qrLat}&lon=${qrLon}&scanner_lat=${scannerLat}&scanner_lon=${scannerLon}`;
                     // Perform the meetup verification
                     fetch(verifyUrl)
                         .then(response => response.json())
