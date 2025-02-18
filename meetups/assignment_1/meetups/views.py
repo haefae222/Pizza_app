@@ -21,6 +21,7 @@ from io import BytesIO
 from django.views.decorators.csrf import csrf_protect
 import math
 from django.core.paginator import Paginator
+from django.db.models import Q
 
 # these are for knowing which page to return for each link
 
@@ -263,3 +264,24 @@ def update_post(request):
             }
 
         return JsonResponse(response)
+    
+@login_required
+def message_page(request, receiver_id):
+    """Show a conversation between the logged-in user and another user."""
+    receiver = User.objects.get(id=receiver_id)
+    messages = Message.objects.filter(
+        (Q(sender=request.user) & Q(receiver=receiver)) |
+        (Q(sender=receiver) & Q(receiver=request.user))
+    ).order_by('timestamp')
+
+    if request.method == 'POST':
+        form = MessageForm(request.POST)
+        if form.is_valid():
+            content = form.cleaned_data['content']
+            # Create and save the message
+            Message.objects.create(sender=request.user, receiver=receiver, content=content, timestamp=now())
+            return redirect('message_page', receiver_id=receiver.id)
+    else:
+        form = MessageForm()
+
+    return render(request, 'message_page.html', {'messages': messages, 'receiver': receiver, 'form': form})

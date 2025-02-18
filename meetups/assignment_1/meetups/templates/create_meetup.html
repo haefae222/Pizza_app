@@ -64,7 +64,8 @@
                         const userID = "{{ request.user.id }}"; // Fix variable name
 
                         // Generate QR code data
-                        const qrData = `https://urri-meetups.rb.dcu.ie/verification/?user_id=${userID}&lat=${latitude}&lon=${longitude}`;
+                        const qrData = `http://127.0.0.1:8000/verification/?user_id=${userID}&lat=${latitude}&lon=${longitude}`;
+                       // const qrData = `https://urri-meetups.rb.dcu.ie/verification/?user_id=${userID}&lat=${latitude}&lon=${longitude}`;
                         const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(qrData)}&size=200x200`;
 
                         // Set QR code image source and make it visible

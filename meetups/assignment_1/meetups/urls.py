@@ -9,7 +9,7 @@ from .forms import *
 urlpatterns = [
    path('', views.Index, name="Index"),
    path('register/', views.UserSignupView.as_view(), name="register"),
-   path('login/',views.LoginView.as_view(template_name="login.html", authentication_form=UserLoginForm)),
+   path('login/',views.LoginView.as_view(template_name="login.html", authentication_form=UserLoginForm), name="login"),
    path('logout/', views.logout_user, name="logout"),
    path('contact/', views.contact, name="contact"),
    path('about/', views.about, name="about"),
@@ -23,5 +23,6 @@ urlpatterns = [
    path('verify_meetup/', views.verify_meetup, name='verify_meetup'),
    path('delete_meetup/<int:meetup_id>/', views.delete_meetup, name='delete_meetup'),
    path("dashboard/", views.dashboard, name="dashboard"),
-   path("update_post/", views.update_post, name="update_post")
+   path("update_post/", views.update_post, name="update_post"),
+   path('message/<int:receiver_id>/', views.message_page, name='message_page')
 ]

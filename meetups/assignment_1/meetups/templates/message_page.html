@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Message with {{ receiver.username }}</h2>
+
+<!-- Message Form (Send Message) -->
+<div class="message-form">
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Send</button>
+    </form>
+</div>
+
+<!-- Display Messages -->
+<div id="messages">
+    {% for message in messages %}
+        <div class="message">
+            <p><strong>{{ message.sender.username }}</strong>: {{ message.content }}</p>
+            <p><small>{{ message.timestamp }}</small></p>
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
+
+<style>
+    /* Message Page */
+    .messages {
+        margin-top: 20px;
+    }
+
+    .message {
+        background-color: #f1f1f1;
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 8px;
+        max-width: 70%;
+        word-wrap: break-word;
+    }
+
+    .message strong {
+        font-weight: bold;
+    }
+
+    .message-form {
+        margin-bottom: 20px;
+    }
+
+    textarea {
+        width: 100%;
+        height: 100px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 16px;
+        resize: none;
+        margin-bottom: 10px;
+    }
+
+    button {
+        padding: 10px 20px;
+        background-color: #5BC6FC;
+        border: none;
+        color: white;
+        font-size: 16px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: #3898C8;
+    }
+
+    /* Styling for the messages display */
+    #messages {
+        margin-top: 30px;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+</style>

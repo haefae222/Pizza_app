@@ -1,99 +1,194 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         body {
             min-height: 100vh;
             margin: 0;
             background: linear-gradient(to bottom, #5BC6FC, #3898C8);
-            font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             font-size: large;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
+
         .content {
             background-color: white;
-            width: auto;
-            height: 80vh;
+            width: 90vw;
+            height: auto;
+            max-width: 800px;
             filter: drop-shadow(0px 1px 12px rgba(0, 0, 0, 0.25));
             border-radius: 20px;
             text-align: center;
-            padding-top: 10px;
-        }
-        .currentpage {
-            background-color: white;
-            filter: drop-shadow(0px 1px 12px rgba(0, 0, 0, 0.25));
-            border-radius: 20px;
-        }
-        .fullcontent {
-            width: 90vw;
-            padding-top: 50px;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        table {
-            width: 100%;
-            height: 25px;
-            table-layout: fixed;
-            margin-bottom: 5px;
-        }
-        th {
-            width: auto;
+            padding: 20px;
+            overflow: auto;
+            margin: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
-        /* Header Styling */
-        .header {
+        /* Bottom Navigation Bar */
+        .bottom-nav {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
             display: flex;
-            align-items: center;
-            padding: 5px 5px;
-            border-radius: 5px;
+            gap: 30px;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            filter: drop-shadow(0px 1px 12px rgba(0, 0, 0, 0.25));
+            max-width: 90%;
+            flex-wrap: wrap;
+        }
+
+        .nav-button {
+            background: #5BC6FC;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+            position: relative;
+            transition: 0.3s;
+            background-size: 50%;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        /* Profile Button */
+        #profileButton {
+            background-image: url('/static/Profile.png'); /* Change this to your profile icon */
+        }
+
+        /* Meetup Button */
+        #meetupButton {
+            background-image: url('/static/Logo.png'); /* Change this to your meetup icon */
+        }
+
+        /* Home Button */
+        #homeButton {
+            background-image: url('/static/home.png'); /* Change this to your home icon */
+        }
+
+        .nav-button:hover {
+            background: #3898C8;
+        }
+
+        /* Dropdown Menus */
+        .dropdown {
+            position: absolute;
+            bottom: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
             filter: drop-shadow(0px 1px 12px rgba(0, 0, 0, 0.25));
         }
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+
+        .dropdown a {
+            text-decoration: none;
+            color: black;
+            font-size: 14px;
+            padding: 5px;
+            border-radius: 5px;
+            transition: 0.2s;
         }
+
+        .dropdown a:hover {
+            background: #5BC6FC;
+            color: white;
+        }
+
+        /* Responsive Adjustments */
+        @media screen and (max-width: 600px) {
+            .nav-button {
+                width: 45px;
+                height: 45px;
+            }
+
+            .bottom-nav {
+                gap: 15px;
+                padding: 8px 15px;
+            }
+
+            .dropdown {
+                width: 100px;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+        }
+
     </style>
 </head>
 <body>
-
-    <!-- Header with Username & Profile Picture -->
-    <div class="header">
-        {% if user.is_authenticated %}
-            <div class="user-info">
-                <strong>{{ user.username }}</strong>
-            </div>
-        {% else %}
-            <strong>Welcome, Guest!</strong>
-        {% endif %}
-    </div>
-
-    <!-- Navigation Bar -->
-   <!-- Navigation Bar -->
-<div class="fullcontent">
-    <table>
-        {% if user.is_authenticated and user.username %}
-            <th class="profilepage"><a href="{% url 'profile' user.username %}">Profile</a></th>
-        {% else %}
-            <th class="contactpage"><a href="{% url 'contact' %}">Home</a></th>
-        {% endif %}
-        
-        {% if user.is_authenticated %}
-            <th class="history"><a href="{% url 'history' %}">Meetup History</a></th>
-            <th class="friends_list"><a href="{% url 'friends_list' %}">Friend List</a></th>
-            <th class="createmeetup"><a href="{% url 'create_meetup' %}">Create Meetup</a></th>
-            <th class="dashbboard"><a href="{% url 'dashboard' %}">Dashbboard</a></th>
-            <th class="logoutpage"><a href="/logout">Logout</a></th>
-        {% else %}
-            <th class="loginpage"><a href="/login">Login</a></th>
-            <th class="registerpage"><a href="/register">Register</a></th>
-        {% endif %}
-    </table>
 
     <div class="content">
         {% block content %}
         {% endblock %}
     </div>
+
+    <!-- Bottom Navigation Bar -->
+    <div class="bottom-nav">
+        <!-- Profile Button -->
+        <!-- Profile Button -->
+<div class="nav-item">
+    <button class="nav-button" id="profileButton" onclick="toggleDropdown('profileDropdown')"></button>
+    <div class="dropdown" id="profileDropdown">
+        {% if user.is_authenticated %}
+            <a href="{% url 'profile' user.username %}">Profile</a>
+            <a href="{% url 'friends_list' %}">Friend List</a>
+            <a href="/logout">Logout</a>
+        {% else %}
+            <a href="{% url 'login' %}">Login</a>
+        {% endif %}
+    </div>
 </div>
+
+        <!-- Meetup Button -->
+        <div class="nav-item">
+            <button class="nav-button" id="meetupButton" onclick="toggleDropdown('meetupDropdown')"></button>
+            <div class="dropdown" id="meetupDropdown">
+                <a href="{% url 'create_meetup' %}">Log Meetup</a>
+                <a href="{% url 'history' %}">Meetup History</a>
+            </div>
+        </div>
+
+        <!-- Home Button -->
+        <div class="nav-item">
+            <button class="nav-button" id="homeButton" onclick="location.href='{% url 'dashboard' %}'"></button>
+        </div>
+    </div>
+
+    <script>
+        function toggleDropdown(menuId) {
+            document.querySelectorAll(".dropdown").forEach(menu => {
+                if (menu.id !== menuId) {
+                    menu.style.display = "none"; // Close other menus
+                }
+            });
+
+            let dropdown = document.getElementById(menuId);
+            dropdown.style.display = dropdown.style.display === "flex" ? "none" : "flex";
+        }
+
+        // Close menus when clicking outside
+        document.addEventListener("click", function(event) {
+            if (!event.target.closest(".nav-item")) {
+                document.querySelectorAll(".dropdown").forEach(menu => {
+                    menu.style.display = "none";
+                });
+            }
+        });
+    </script>
+
 </body>
 </html>

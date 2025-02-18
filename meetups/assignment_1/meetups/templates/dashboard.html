@@ -1,52 +1,62 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Welcome, {{ request.user.username }}!</h2>
+<div class="dashboard-container">
+    <h2>Welcome to your Dashboard</h2>
 
-<!-- Post Form -->
-<form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Post</button>
-</form>
+    <!-- Post Form -->
+    <form method="POST" enctype="multipart/form-data" class="post-form">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form.as_p }}
+        </div>
+        <button type="submit" class="btn-submit">Post</button>
+    </form>
 
-<hr>
+    <hr>
 
-<!-- Display Posts -->
-<div id="post-container">
-    {% for post in posts %}
-        <div class="post" data-post-id="{{ post.id }}">
-            <p><strong>{{ post.user.username }}</strong> - {{ post.created_at|date:"F j, Y, g:i a" }}</p>
-            <p>{{ post.text }}</p>
-            {% if post.image %}
-                <img src="{{ post.image.url }}" style="max-width: 300px;">
-            {% endif %}
-            <!-- Like Button -->
-            <button class="like-btn" data-id="{{ post.id }}">❤️ Like</button> 
-            <span class="like-count">{{ post.like_count }}</span>
+    <!-- Display Posts -->
+    <div id="post-container">
+        {% for post in posts %}
+            <div class="post-card" data-post-id="{{ post.id }}">
+                <div class="post-header">
+                    <strong>{{ post.user.username }}</strong>
+                    <small>{{ post.created_at|date:"F j, Y, g:i a" }}</small>
+                </div>
+                <div class="post-content">
+                    <p>{{ post.text }}</p>
+                    {% if post.image %}
+                        <img src="{{ post.image.url }}" class="post-image">
+                    {% endif %}
+                </div>
+                <div class="post-actions">
+                    <button class="btn-like" data-id="{{ post.id }}">❤️ Like</button>
+                    <span class="like-count">{{ post.like_count }}</span>
 
-            <!-- Comment Section -->
-            <div class="comment-section">
-                <input type="text" class="comment-input" placeholder="Write a comment..." data-id="{{ post.id }}">
-                <button class="comment-btn" data-id="{{ post.id }}">💬 Comment</button>
-                <div class="comments">
-                    {% for comment in post.comments.all %}
-                        <div class="comment">
-                            <strong>{{ comment.user.username }}</strong>: {{ comment.text }} <br>
-                            <small>{{ comment.created_at|date:"F j, Y, g:i a" }}</small>
-                        </div>
-                    {% endfor %}
+                    <!-- Comment Section -->
+                    <div class="comment-section">
+                        <input type="text" class="comment-input" placeholder="Write a comment..." data-id="{{ post.id }}">
+                        <button class="btn-comment" data-id="{{ post.id }}">💬</button>
+                    </div>
+                    <div class="comments">
+                        {% for comment in post.comments.all %}
+                            <div class="comment">
+                                <strong>{{ comment.user.username }}</strong>: {{ comment.text }} <br>
+                                <small>{{ comment.created_at|date:"F j, Y, g:i a" }}</small>
+                            </div>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
-        </div>
-    {% empty %}
-        <p>No posts yet. Follow some friends and start posting!</p>
-    {% endfor %}
+        {% empty %}
+            <p>No posts yet. Follow some friends and start posting!</p>
+        {% endfor %}
+    </div>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Handle Like Button Click
-    document.querySelectorAll('.like-btn').forEach(function(button) {
+    document.querySelectorAll('.btn-like').forEach(function(button) {
         button.addEventListener('click', function() {
             var postId = button.getAttribute('data-id');
             fetch("{% url 'update_post' %}", {
@@ -67,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Handle Comment Button Click
-    document.querySelectorAll('.comment-btn').forEach(function(button) {
+    document.querySelectorAll('.btn-comment').forEach(function(button) {
         button.addEventListener('click', function() {
             var postId = button.getAttribute('data-id');
             var commentInput = button.previousElementSibling;
@@ -84,16 +94,210 @@ document.addEventListener('DOMContentLoaded', function() {
                 })
                 .then(response => response.json())
                 .then(data => {
-                    // Update the comment count
-                    var commentSection = button.closest('.post').querySelector('.comments');
+                    // Update the comment section with the new comment
+                    var commentSection = button.closest('.post-card').querySelector('.comments');
                     commentSection.innerHTML += `<div class="comment"><strong>${data.comment_user}</strong>: ${data.comment_text} <br><small>${data.created_at}</small></div>`;
                     button.previousElementSibling.value = '';  // Clear the comment input
-                    button.closest('.post').querySelector('.like-count').textContent = data.comment_count;  // Update comment count
+                    button.closest('.post-card').querySelector('.like-count').textContent = data.comment_count;  // Update comment count
                 });
             }
         });
     });
 });
 </script>
+<style>
+    /* General Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f7f9fc;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+/* Dashboard Container */
+.dashboard-container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+/* Post Form */
+.post-form {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+.post-form .form-group {
+    margin-bottom: 20px;
+}
+
+.post-form .btn-submit {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #5BC6FC;
+    border: none;
+    color: white;
+    font-size: 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.post-form .btn-submit:hover {
+    background-color: #3898C8;
+}
+
+/* Post Card */
+.post-card {
+    background-color: white;
+    border-radius: 12px;
+    margin: 20px 0;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease-in-out;
+}
+
+.post-card:hover {
+    transform: translateY(-5px);
+}
+
+.post-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    font-size: 14px;
+    color: #555;
+}
+
+.post-content {
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+.post-image {
+    width: 100%;
+    border-radius: 12px;
+    margin-top: 10px;
+}
+
+/* Post Actions */
+.post-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+}
+
+.btn-like {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: #5BC6FC;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.btn-like:hover {
+    color: #3898C8;
+}
+
+.like-count {
+    font-size: 16px;
+}
+
+/* Comment Section */
+.comment-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.comment-input {
+    width: 80%;
+    padding: 12px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
+    transition: all 0.3s ease;
+}
+
+.comment-input:focus {
+    outline: none;
+    border-color: #5BC6FC;
+    background-color: #fff;
+}
+
+.btn-comment {
+    padding: 12px;
+    background-color: #5BC6FC;
+    border: none;
+    color: white;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 18px;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn-comment:hover {
+    background-color: #3898C8;
+}
+
+.comments {
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.comment {
+    background-color: #f1f1f1;
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.comment strong {
+    color: #5BC6FC;
+}
+
+.comment small {
+    color: #777;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .post-form {
+        padding: 15px;
+    }
+
+    .post-card {
+        padding: 15px;
+    }
+
+    .comment-input {
+        width: 70%;
+    }
+
+    .btn-comment {
+        padding: 10px;
+        width: 40px;
+        height: 40px;
+    }
+}
+
+</style>
 
 {% endblock %}

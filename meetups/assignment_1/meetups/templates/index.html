@@ -1,11 +1,3 @@
-
-<!--
-the index page, which is at 127.0.0.1:8000
-i will probably make this the entry page, and include
-another link to a home page instead
-below is the actual content of the page.
--->
-
 {% block content %}
 {% load static %}
 <style>
@@ -13,57 +5,42 @@ below is the actual content of the page.
         display: block;
         margin-left: auto;
         margin-right: auto;
-        text-align: center;
-        max-height: fit-content;
-        margin-top: 150px;
     }
-
     img {
-        filter: drop-shadow(0px 1px 10px rgba(0, 0, 0, 0.25));
-        width: 300px;
+        width: 75vw;
+        margin-top: 15vw
     }
-
-    img:active {
-        filter: brightness(0.9);
-    }
-
     body {
         max-height: 100vh;
-        margin: 0;
         background: linear-gradient(to bottom, #5BC6FC, #3898C8);
         font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         text-align: center;
         color: white;
-        text-shadow: 0px 1px 9px rgba(0, 0, 0, 0.4);
     }
-
     h1 {
+        font-size: 15vw;
         margin-top: 0px;
-        font-size: 60px;
-        margin-bottom: 5px;
     }
-
-    h2 {
-        font-size: 25px;
-        font-weight: 500;
+    button {
+        width: 50vw;
+        border-radius: 15px;
+        height: 12vw;
+        border: none;
+        font-weight: 550;
+        font-size: 6vw;
+        color: #0d4b6a;
     }
-
-    h3 {
-        font-size: large;
-        text-shadow: 0px 1px 5px rgba(0, 0, 0, 0.4);
+    button:active {
+        background-color: rgb(219, 219, 219);
     }
         
 </style>
 
 <div class="landing">
-<a href="/contact">
     <img src="{% static 'Logo.PNG' %}" alt="Meetups Logo">
-</a>
-
-<h1>Meetups</h1>
-<h2>Building close connections</h2>
-<br><br>
-<h3>Click the logo to get started</h3>
+    
+    <h1>Meetups</h1>
+    <a href="/contact"><button>Get Started</button></a>
 </div>
 
 {% endblock %}
