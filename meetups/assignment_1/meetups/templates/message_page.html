@@ -2,7 +2,7 @@
 {% block content %}
 <h2>Message with {{ receiver.username }}</h2>
 
-<!-- Message Form (Send Message) -->
+
 <div class="message-form">
     <form method="POST">
         {% csrf_token %}
@@ -11,7 +11,7 @@
     </form>
 </div>
 
-<!-- Display Messages -->
+
 <div id="messages">
     {% for message in messages %}
         <div class="message">
@@ -24,7 +24,7 @@
 {% endblock %}
 
 <style>
-    /* Message Page */
+
     .messages {
         margin-top: 20px;
     }
@@ -72,7 +72,7 @@
         background-color: #3898C8;
     }
 
-    /* Styling for the messages display */
+  
     #messages {
         margin-top: 30px;
         max-height: 400px;

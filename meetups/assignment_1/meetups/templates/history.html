@@ -1,54 +1,66 @@
 {% extends 'base.html' %}
 {% block content %}
 <style>
-    .history {
-        background-color: white;
-        filter: drop-shadow(0px 1px 12px rgba(0, 0, 0, 0.25));
-        border-radius: 20px;
-        height: 40px;
-    }
     table {
         width: 100%;
         border-collapse: collapse;
         margin-top: 20px;
     }
-    /* commenting this out because it messes with the navbar,
-       can be adjusted after testing when we have meetups logged
+
+    th, td {
+        text-align: left; 
+        padding: 10px; 
+        overflow: hidden; 
+        text-overflow: ellipsis; 
+        white-space: nowrap;
+    }
+
+ 
     th {
-        background-color: #5BC6FC;
-    }*/ 
+        background-color: #5BC6FC; 
+        color: white; 
+    }
+
+    
+    @media (max-width: 600px) {
+        th, td {
+            font-size: 14px; 
+        }
+    }
+
 </style>
 
 <h2>Meetups for {{ request.user.username }}</h2>
 
 {% if meetups %}
-    <table>
-        <thead>
-            <tr>
-                <th>With</th>
-                <th>Location</th>
-                <th>Time</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for meetup in meetups %}
-            <tr>
-                <td>
-                    {% if meetup.scanner.user == request.user %}
-                        {{ meetup.scanned.user.username }}
-                    {% else %}
-                        {{ meetup.scanner.user.username }}
-                    {% endif %}
-                </td>
-                <td>{{ meetup.location|default:"N/A" }}</td>
-                <td>{{ meetup.timestamp }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="history">
+        <table>
+            <thead>
+                <tr>
+                    <th>With</th>
+                    <th>Location</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for meetup in meetups %}
+                <tr>
+                    <td>
+                        {% if meetup.scanner.user == request.user %}
+                            {{ meetup.scanned.user.username }}
+                        {% else %}
+                            {{ meetup.scanner.user.username }}
+                        {% endif %}
+                    </td>
+                    <td>{{ meetup.location|default:"N/A" }}</td>
+                    <td>{{ meetup.timestamp }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% else %}
     <p>No meetups yet.</p>
 {% endif %}
 
 {% endblock %}
-

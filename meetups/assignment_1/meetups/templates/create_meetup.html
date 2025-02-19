@@ -4,23 +4,23 @@
 <style>
     .container {
         display: flex;
-        align-items: center; /* Aligns content vertically */
-        justify-content: space-between; /* Places text on left, QR on right */
-        max-width: 800px; /* Adjust width as needed */
-        margin: auto; /* Centers the container */
+        align-items: center;
+        justify-content: space-between;
+        max-width: 800px; 
+        margin: auto; 
         padding: 20px;
     }
     .text-section {
-        flex: 1; /* Takes available space on the left */
+        flex: 1; 
         text-align: left;
     }
     .qr-section {
-        flex: 1; /* Takes available space on the right */
+        flex: 1; 
         display: flex;
         justify-content: center;
     }
     #qrCodeImg {
-        width: 300px; /* Adjust QR code size */
+        width: 300px;
         height: 300px;
         display: none;
     }
@@ -31,7 +31,7 @@
 
     <h1>Get Your Location</h1>
     
-    <!-- Explicit user consent before enabling location button -->
+    <!-- gets explicit consent from the user before taking location -->
     <input type="checkbox" id="consentCheckbox"> I allow this site to use my location.
     <br>
     <button id="getLocationBtn" disabled>Get Location</button>
@@ -61,23 +61,23 @@
                     (position) => {
                         const latitude = position.coords.latitude;
                         const longitude = position.coords.longitude;
-                        const userID = "{{ request.user.id }}"; // Fix variable name
+                        const userID = "{{ request.user.id }}"; 
 
                         // Generate QR code data
-                       // const qrData = `http://127.0.0.1:8000/verification/?user_id=${userID}&lat=${latitude}&lon=${longitude}`;
+                    
                         const qrData = `https://urri-meetups.rb.dcu.ie/verification/?user_id=${userID}&lat=${latitude}&lon=${longitude}`;
                         const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(qrData)}&size=200x200`;
 
-                        // Set QR code image source and make it visible
+                   
                         document.getElementById("qrCodeImg").src = qrCodeUrl;
-                        document.getElementById("qrCodeImg").style.display = "block"; // Show the QR code
+                        document.getElementById("qrCodeImg").style.display = "block";
                         document.getElementById("qrCodeLink").href = qrData;
 
-                        // Display Latitude & Longitude
+                        // display latitude & longitude
                         document.getElementById("status").textContent = "Location received!";
                         document.getElementById("location").textContent = `Latitude: ${latitude}, Longitude: ${longitude}`;
 
-                        // Reverse Geocoding API call
+                        // reverse Geocoding API call
                         fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)
                             .then(response => response.json())
                             .then(data => {

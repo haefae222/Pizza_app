@@ -2,13 +2,13 @@
 
 {% block content %}
     <div class="profile-container">
-        <!-- User Info -->
+      
         <h1>{{ profile.user.username }}'s Profile</h1>
         <p>Email: {{ profile.user.email }}</p>
 
-        <!-- Profile Layout (Left: Following List, Right: To-Do List) -->
+        
         <div class="profile-content">
-            <!-- Left Section: Following List -->
+          
             <div class="left-section">
                 <h2>Following:</h2>
                 <ul class="following-list">
@@ -20,7 +20,7 @@
                 </ul>
             </div>
 
-            <!-- Right Section: To-Do List -->
+        
             <div class="right-section">
                 <h2>People to Meet</h2>
                 <ul id="todo-list">
@@ -34,7 +34,7 @@
                     {% endfor %}
                 </ul>
 
-                <!-- Form to Add New People to Meet -->
+               
                 <h3>Add to To-Do List</h3>
                 <form method="POST" class="todo-form">
                     {% csrf_token %}
@@ -46,7 +46,7 @@
         </div>
     </div>
 
-    <!-- Add the JavaScript to handle the delete button -->
+    <!-- added the JavaScript to handle the delete button -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const deleteButtons = document.querySelectorAll('.delete-meetup');
@@ -87,18 +87,18 @@
             padding: 20px;
         }
 
-        /* Profile content layout */
+        
         .profile-content {
             display: flex;
             justify-content: space-between;
             gap: 20px;
         }
 
-        /* Left Section (Following List) */
+      
         .left-section {
             flex: 1;
-            max-height: 500px;  /* Adjust based on your requirements */
-            overflow-y: auto;  /* Makes it scrollable */
+            max-height: 500px; 
+            overflow-y: auto;  
             background-color: #f9f9f9;
             padding: 20px;
             border-radius: 8px;
@@ -114,7 +114,7 @@
             margin: 10px 0;
         }
 
-        /* Right Section (To-Do List) */
+    
         .right-section {
             flex: 2;
             background-color: #f9f9f9;
@@ -123,7 +123,7 @@
             border: 1px solid #ddd;
         }
 
-        /* Styling the To-Do Form */
+       
         .todo-form input[type="text"],
         .todo-form input[type="datetime-local"] {
             margin: 10px 0;

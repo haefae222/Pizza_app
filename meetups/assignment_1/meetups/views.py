@@ -54,8 +54,6 @@ def logout_user(request):
 def contact(request):
     return render(request, 'contact.html')
 
-def about(request):
-    return render(request, 'about.html')
 
 def style(request):
     return render(request, 'style.css')
@@ -73,9 +71,6 @@ def history(request):
     meetups = profile.scanned_meetups.all() | profile.scanned_by_meetups.all()
     return render(request, "history.html", {"meetups": meetups})
 
-def profile_list(request):
-    profiles = Profile.objects.all()
-    return render(request, "user_list.html", {"profiles": profiles})
 
 def verification(request):
     return render(request, "verification.html")
@@ -92,66 +87,65 @@ def calculate_distance(lat1, lon1, lat2, lon2):
 
     return R * c  # Distance in meters
 
+
 @login_required
 def verify_meetup(request):
-    scanner = request.user.profile  # The user scanning the QR code
-
-    # Extract query parameters from the request
-    qr_user_id = request.GET.get('user_id')
-    qr_lat = request.GET.get('lat')
-    qr_lon = request.GET.get('lon')
-    scanner_lat = request.GET.get('scanner_lat')
-    scanner_lon = request.GET.get('scanner_lon')
-
-    # Validate required parameters
-    if not all([qr_user_id, qr_lat, qr_lon, scanner_lat, scanner_lon]):
-        return JsonResponse({'error': 'Missing required location data'}, status=400)
+    if request.method != "POST":
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
 
     try:
+        data = json.loads(request.body)  # Parse JSON data from POST request
+
+        scanner = request.user.profile  # The user scanning the QR code
+        qr_user_id = data.get("user_id")
+        qr_lat = data.get("qr_lat")
+        qr_lon = data.get("qr_lon")
+        scanner_lat = data.get("scanner_lat")
+        scanner_lon = data.get("scanner_lon")
+        scanner_address = data.get("scanner_address", "Unknown Location")  # Get the address
+
+        if not all([qr_user_id, qr_lat, qr_lon, scanner_lat, scanner_lon]):
+            return JsonResponse({'error': 'Missing required location data'}, status=400)
+
         # Convert coordinates to float
-        qr_lat, qr_lon = float(qr_lat), float(qr_lon)
-        scanner_lat, scanner_lon = float(scanner_lat), float(scanner_lon)
-    except ValueError:
-        return JsonResponse({'error': 'Invalid latitude or longitude values'}, status=400)
+        try:
+            qr_lat, qr_lon = float(qr_lat), float(qr_lon)
+            scanner_lat, scanner_lon = float(scanner_lat), float(scanner_lon)
+        except ValueError:
+            return JsonResponse({'error': 'Invalid latitude or longitude values'}, status=400)
 
-    # Fetch the QR code owner
-    try:
-        qr_owner = Profile.objects.get(user__id=qr_user_id)
-    except Profile.DoesNotExist:
-        return JsonResponse({'error': 'QR code owner not found'}, status=404)
+        # Fetch the QR code owner
+        try:
+            qr_owner = Profile.objects.get(user__id=qr_user_id)
+        except Profile.DoesNotExist:
+            return JsonResponse({'error': 'QR code owner not found'}, status=404)
 
-    # Calculate distance between scanner and QR code location
-    distance = calculate_distance(qr_lat, qr_lon, scanner_lat, scanner_lon)
+        # Calculate distance
+        distance = calculate_distance(qr_lat, qr_lon, scanner_lat, scanner_lon)
+        if distance > 100:
+            return JsonResponse({'error': 'Users must be within 10 meters to verify meetup', 'distance': round(distance, 2)}, status=400)
 
-    if distance > 100:  # If users are not within 10 meters
+        # Store meetup in the database
+        meetup = Meetup.objects.create(
+            scanner=scanner,
+            scanned=qr_owner,
+            location=scanner_address,  # Store address instead of lat/lon
+            timestamp=now()
+        )
+
         return JsonResponse({
-            'error': 'Users must be within 10 meters to verify meetup',
-            'distance': round(distance, 2)  # Return distance even on failure
-        }, status=400)
+            'success': True,
+            'message': 'Meetup verified!',
+            'meetup_id': meetup.id,
+            'distance': round(distance, 2),
+            'scanner_username': scanner.user.username,
+            'qr_owner_username': qr_owner.user.username,
+            'location': scanner_address,  # Return the address
+            'timestamp': meetup.timestamp.strftime("%Y-%m-%d %H:%M:%S")
+        })
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
 
-    # Users follow each other
-    scanner.follows.add(qr_owner)
-    qr_owner.follows.add(scanner)
-
-    # Log the meetup
-    meetup = Meetup.objects.create(
-        scanner=scanner,
-        scanned=qr_owner,
-        location=f"{scanner_lat}, {scanner_lon}",
-        timestamp=now()
-    )
-
-    # Return JSON response with verification details
-    return JsonResponse({
-        'success': True,
-        'message': 'Meetup verified!',
-        'meetup_id': meetup.id,
-        'distance': round(distance, 2),  # Verified distance
-        'scanner_username': scanner.user.username,  # Scanner (who verified)
-        'qr_owner_username': qr_owner.user.username,  # QR Code Owner
-        'location': f"{scanner_lat}, {scanner_lon}",  # Meetup Location
-        'timestamp': meetup.timestamp.strftime("%Y-%m-%d %H:%M:%S")  # Date and Time
-    })
 
 @login_required
 def user_profile_page(request, username=None):

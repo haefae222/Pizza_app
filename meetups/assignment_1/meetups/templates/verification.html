@@ -2,7 +2,7 @@
 
 {% block content %}
 <style>
-    /* Center the entire content */
+   
     .createmeetup {
         background-color: white;
         filter: drop-shadow(0px 1px 12px rgba(0, 0, 0, 0.25));
@@ -10,12 +10,12 @@
         height: auto;
         padding: 20px;
         margin: 20px auto;
-        width: 80%; /* Set a max width */
-        max-width: 1000px; /* Optional: to prevent stretching on large screens */
+        width: 80%; 
+        max-width: 1000px;
         text-align: center;
     }
 
-    /* For the notification at the top */
+  
     #notification {
         text-align: center;
         font-size: 1.2em;
@@ -30,17 +30,17 @@
         color: red;
     }
 
-    /* Flexbox layout for the content sections */
+    
     .content-container {
         display: flex;
-        justify-content: center; /* Center the sections horizontally */
+        justify-content: center; 
         flex-wrap: wrap;
         padding: 20px;
         gap: 20px;
     }
 
     .section {
-        width: 48%; /* Ensure both sections have equal width */
+        width: 48%; 
         padding: 15px;
         background-color: #f9f9f9;
         border-radius: 10px;
@@ -55,7 +55,7 @@
         word-wrap: break-word;
     }
 
-    /* Error and success messages styles */
+   
     #errorMessage {
         color: red;
         text-align: center;
@@ -68,7 +68,7 @@
         font-weight: bold;
     }
 
-    /* Adjust button size */
+   
     #getLocationBtn {
         padding: 10px 20px;
         background-color: #3898C8;
@@ -83,17 +83,16 @@
         background-color: #b0c4de;
         cursor: not-allowed;
     }
-
 </style>
 
 <h1>Verify Meetup</h1>
 
-<!-- Notification for Success/Error -->
+
 <div id="notification"></div>
 
 <div class="createmeetup">
     <div class="content-container">
-        <!-- Left Section: QR Code Owner Information -->
+      
         <div class="section">
             <h3>QR Code Owner</h3>
             <p id="qrOwnerUsername"></p>
@@ -101,7 +100,7 @@
             <p id="meetupTimestamp"></p>
         </div>
 
-        <!-- Right Section: Scanner's Location Information -->
+        
         <div class="section">
             <h3>Your Location</h3>
             <p id="scannerUsername"></p>
@@ -113,7 +112,7 @@
     <p id="qrData"></p>
     <p id="status">To verify the meetup, please allow the site to access your location.</p>
 
-    <!-- Explicit user consent before enabling location button -->
+  
     <input type="checkbox" id="consentCheckbox"> I allow this site to use my location.
     <br>
     <button id="getLocationBtn" disabled>Verify Meetup</button>
@@ -123,7 +122,7 @@
 </div>
 
 <script>
-    // Display QR code parameters and prompt for location
+   
     const urlParams = new URLSearchParams(window.location.search);
     const userID = urlParams.get('user_id');
     const qrLat = urlParams.get('lat');
@@ -131,13 +130,17 @@
 
     if (!userID || !qrLat || !qrLon) {
         document.getElementById("errorMessage").textContent = "Missing QR code data. Cannot verify meetup.";
-    } else {
-
     }
 
+  // consent box to get locattion 
     document.getElementById("consentCheckbox").addEventListener("change", function () {
         document.getElementById("getLocationBtn").disabled = !this.checked;
     });
+
+    function getCSRFToken() {
+        return document.cookie.split('; ').find(row => row.startsWith('csrftoken='))
+            ?.split('=')[1];
+    }
 
     document.getElementById("getLocationBtn").addEventListener("click", function () {
         if ("geolocation" in navigator) {
@@ -146,72 +149,56 @@
                     const scannerLat = position.coords.latitude;
                     const scannerLon = position.coords.longitude;
 
-                    // Display user's location
-                    document.getElementById("location").textContent = `Your Location: Latitude: ${scannerLat}, Longitude: ${scannerLon}`;
-
-                    // Reverse Geocoding API call
+                    // getting address from latitude and longitude
                     fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${scannerLat}&lon=${scannerLon}`)
                         .then(response => response.json())
                         .then(data => {
-                            document.getElementById("address").textContent = data.display_name
-                                ? `Address: ${data.display_name}`
-                                : "Address not found.";
+                            const scannerAddress = data.display_name || "Unknown Address";
+
+                            // send data to the verify meetup view
+                            fetch("http://127.0.0.1:8000/verify_meetup/", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    "X-CSRFToken": getCSRFToken() 
+                                },
+                                credentials: "include",  
+                                body: JSON.stringify({
+                                    user_id: userID,
+                                    qr_lat: qrLat,
+                                    qr_lon: qrLon,
+                                    scanner_lat: scannerLat,
+                                    scanner_lon: scannerLon,
+                                    scanner_address: scannerAddress 
+                                })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    document.getElementById("successMessage").textContent = `✅ ${data.message}`;
+                                    document.getElementById("qrOwnerUsername").textContent = `QR Code Owner: ${data.qr_owner_username}`;
+                                    document.getElementById("scannerUsername").textContent = `Scanner: ${data.scanner_username}`;
+                                    document.getElementById("meetupDistance").textContent = `Distance: ${data.distance} meters`;
+                                    document.getElementById("meetupTimestamp").textContent = `Verified at: ${data.timestamp}`;
+                                    document.getElementById("address").textContent = `Address: ${scannerAddress}`;
+                                } else {
+                                    document.getElementById("errorMessage").textContent = `❌ ${data.error}`;
+                                }
+                            })
+                            .catch(error => console.error("Verification error:", error));
                         })
                         .catch(error => {
                             console.error("Error fetching address:", error);
-                            document.getElementById("address").textContent = "Error getting address.";
-                        });
-
-                    // Construct the URL to verify meetup with the scanner's location
-                    const verifyUrl = `https://urri-meetups.rb.dcu.ie/verify_meetup/?user_id=${userID}&lat=${qrLat}&lon=${qrLon}&scanner_lat=${scannerLat}&scanner_lon=${scannerLon}`;
-                    // Perform the meetup verification
-                    fetch(verifyUrl)
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                document.getElementById("successMessage").textContent = `✅ ${data.message}`;
-
-                                // Show notification
-                                document.getElementById("notification").classList.add("success");
-                                document.getElementById("notification").textContent = "Meetup verification successful!";
-                                
-                                // Display usernames and meetup details
-                                document.getElementById("qrOwnerUsername").textContent = `QR Code Owner: ${data.qr_owner_username}`;
-                                document.getElementById("scannerUsername").textContent = `Scanner: ${data.scanner_username}`;
-                                document.getElementById("meetupDistance").textContent = `Distance: ${data.distance} meters`;
-                                document.getElementById("meetupTimestamp").textContent = `Verified at: ${data.timestamp}`;
-                            } else {
-                                document.getElementById("errorMessage").textContent = `❌ ${data.error}`;
-
-                                // Show notification
-                                document.getElementById("notification").classList.add("error");
-                                document.getElementById("notification").textContent = "Meetup verification failed.";
-
-                                if (data.distance) {
-                                    document.getElementById("meetupDistance").textContent = `Distance: ${data.distance} meters`;
-                                }
-                            }
-                        })
-                        .catch(error => {
-                            console.error("Verification error:", error);
-                            document.getElementById("errorMessage").textContent = "Error verifying meetup.";
-                            document.getElementById("notification").classList.add("error");
-                            document.getElementById("notification").textContent = "Error verifying meetup.";
+                            document.getElementById("errorMessage").textContent = "Error getting address.";
                         });
                 },
                 (error) => {
                     console.error("Geolocation error:", error);
-                    document.getElementById("status").textContent = "Error getting location!";
                     document.getElementById("errorMessage").textContent = "Unable to get your location.";
-                    document.getElementById("notification").classList.add("error");
-                    document.getElementById("notification").textContent = "Geolocation error.";
                 }
             );
         } else {
-            document.getElementById("status").textContent = "Geolocation is not supported.";
             document.getElementById("errorMessage").textContent = "Geolocation is not supported by your browser.";
-            document.getElementById("notification").classList.add("error");
-            document.getElementById("notification").textContent = "Geolocation not supported.";
         }
     });
 </script>

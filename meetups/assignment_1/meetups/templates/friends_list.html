@@ -72,14 +72,11 @@
 </style>
 
 <h1>Friend List</h1>
-<h2>Your Friends</h2>
 
-<!-- Friend List Container -->
 <div class="friends-list-container">
     {% for friend in following %}
         <div class="friend-card">
-            <!-- Assuming 'friend.profile.picture' holds the profile image URL -->
-            <img src="{{ friend.profile.picture.url }}" alt="{{ friend.user.username }}'s Profile Picture">
+    
             <div class="friend-name">{{ friend.user.username }}</div>
             <div class="friend-email">{{ friend.user.email }}</div>
             <a href="{% url 'message_page' receiver_id=friend.id %}">
