@@ -36,9 +36,9 @@ class PostForm(forms.ModelForm):
 class MessageForm(forms.ModelForm):
     class Meta:
         model = Message
-        fields = ['content']  # Only the content field is needed for the message
+        fields = ['content']  
 
-    # You can also add any custom validation or clean methods if necessary
+  # cleaning the content making sure it's valid and not empty 
     def clean_content(self):
         content = self.cleaned_data['content']
         if len(content) < 1:
