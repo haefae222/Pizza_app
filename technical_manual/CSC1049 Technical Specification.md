@@ -162,7 +162,7 @@ The system is designed using the Model-View-Template (MVT) architecture, which i
 **3.2. DFD Diagram**  
 This Data Flow Diagram (DFD) illustrates how data moves between different parts of the system.
 
-![Image of DFD diagram](Data_Flow_Diagram.drawio)
+![Image of DFD diagram](Data_Flow_Diagram.png)
 
 **3.3. Object-Oriented Design**  
 The Meetups application is designed using object-oriented principles to ensure modularity and maintainability. The following object-oriented structures enable the system to efficiently manage user data, relationships, and social interactions while keeping the codebase scalable and reusable:
