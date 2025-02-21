@@ -20,7 +20,7 @@
 - Access the app at [http://127.0.0.1:8000/](http://127.0.0.1:8000/) in the browser
 
 → When you access the app for the first time, the landing page will appear.  
-![Picture of the landing page](landing_screen.jpeg")
+![Picture of the landing page](landing_screen.jpeg)
 
 → Click “Get started”. This will bring you to a page prompting you to either log in or register an account.  
 → If you already have a Meetups account, click “Log in”, and enter your existing account credentials.  
